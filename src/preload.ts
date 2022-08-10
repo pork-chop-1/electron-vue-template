@@ -8,5 +8,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   toggleMaximize: () => ipcRenderer.send('toggle-maximize'),
   isMaximized: () => ipcRenderer.send('is-maximized'),
   setMinimize: () => ipcRenderer.send('set-minimize'),
-  isMaximizedInfo: (callback: (event: Electron.IpcRendererEvent, isMaximized: boolean) => void) => ipcRenderer.on('update-counter', callback)
+  isMaximizedInfo: (callback: (event: Electron.IpcRendererEvent, isMaximized: boolean) => void) => ipcRenderer.on('isMaximizedInfo', callback)
 })

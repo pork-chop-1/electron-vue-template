@@ -56,6 +56,7 @@ const maximize = () => {
 }
 
 window.electronAPI.isMaximizedInfo((_event, value) => {
+  isMaximized.value = value
   console.log(value, 'value')
 })
 </script>
