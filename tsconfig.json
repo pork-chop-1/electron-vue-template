@@ -2,16 +2,22 @@
   "compilerOptions": {
     "allowJs": true,
     "module": "commonjs",
+    "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "jsx": "preserve",
     "outDir": "dist",
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*"],
+      "@/*": [
+        "src/*"
+      ]
     }
   },
   "include": ["src/**/*"]
