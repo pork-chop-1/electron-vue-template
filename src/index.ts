@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, protocol } from 'electron';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
@@ -11,7 +11,7 @@ const createWindow = (): void => {
     height: 600,
     width: 800,
     webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
     },
     frame: false,
 
@@ -25,6 +25,19 @@ const createWindow = (): void => {
     mainWindow.webContents.send('isMaximizedInfo', false)
   })
 
+  protocol.registerFileProtocol(
+    'your-custom-protocol',
+    function (request, callback) {
+      const url = request.url.replace(`your-custom-protocol://`, '')
+      try {
+        return callback(decodeURIComponent(url))
+      }
+      catch (error) {
+        // Handle the error as needed
+        console.error(error)
+      }
+    },
+  );
   // 设置源
   // https://stackoverflow.com/questions/51969512/define-csp-http-header-in-electron-app
   // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
@@ -94,12 +107,22 @@ function setMinimize(event: Electron.IpcMainEvent) {
   const win = BrowserWindow.fromWebContents(webContents)
   win?.minimize()
 }
+async function handleFileOpen() {
+  const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openFile'] })
+  if (canceled) {
+    return
+  } else {
+    return filePaths[0]
+  }
+}
+
 app.whenReady().then(() => {
   ipcMain.on('set-title', handleSetTitle)
   ipcMain.on('close-window', handleCloseWindow)
   ipcMain.on('toggle-maximize', toggleMaximize)
   ipcMain.on('is-maximized', isMaximize)
   ipcMain.on('set-minimize', setMinimize)
+  ipcMain.handle('open-file', handleFileOpen)
 
   createWindow()
 });
