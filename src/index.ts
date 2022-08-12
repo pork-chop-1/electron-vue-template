@@ -26,9 +26,9 @@ const createWindow = (): void => {
   })
 
   protocol.registerFileProtocol(
-    'your-custom-protocol',
+    'b-media',
     function (request, callback) {
-      const url = request.url.replace(`your-custom-protocol://`, '')
+      const url = request.url.replace(`b-media://`, '')
       try {
         return callback(decodeURIComponent(url))
       }

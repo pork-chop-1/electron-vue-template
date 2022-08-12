@@ -64,8 +64,8 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
 #header-container {
   width: 100%;
   height: 40px;
-  background: rgb(0, 162, 255);
-  color: #fff;
+  background: var(--theme-background-color);
+  color: var(--theme-foreground-color);
   -webkit-app-region: drag;
   display: flex;
   align-items: center;
@@ -93,7 +93,7 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
         justify-content: center;
 
         &:hover {
-          background: rgb(136, 211, 255);
+          background: var(--theme-background-selected);
         }
       }
     }
@@ -110,11 +110,11 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
       background: inherit;
 
       &#close:hover {
-        background: rgb(255, 74, 74)
+        background: var(--theme-background-danger)
       }
 
       &:hover {
-        background: rgb(136, 211, 255);
+        background: var(--theme-background-selected);
       }
     }
   }

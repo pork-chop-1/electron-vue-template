@@ -11,11 +11,15 @@
       Your browser does not support the
       <code>audio</code> element.
     </audio>
+    <div class="slider-wrapper">
+      <Slider/>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import Header from './components/Header/index.vue'
+import Slider from './components/Slider/index.vue'
 
 console.log('ts enable')
 const times = ref(0)
@@ -33,7 +37,7 @@ const showInfo = () => {
     console.log(docpicker.value.files)
     if(docpicker.value.files && docpicker.value.files.length > 0) {
       // var url = URL.createObjectURL(docpicker.value.files[0])
-      let url = 'your-custom-protocol:///' + docpicker.value.files[0].path
+      let url = 'b-media:///' + docpicker.value.files[0].path
       musicPath.value = url
     }
   }
@@ -41,4 +45,7 @@ const showInfo = () => {
   // onMounted(())
 </script>
 <style>
+.slider-wrapper {
+  padding: 20px;
+}
 </style>
