@@ -12,5 +12,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setMinimize: () => ipcRenderer.send('set-minimize'),
   isMaximizedInfo: (callback: isMaximizedInfoCallbackType) => 
     ipcRenderer.on('isMaximizedInfo', callback),
-  openFile: () => ipcRenderer.invoke('open-file')
+  openFile: () => ipcRenderer.invoke('open-file'),
 })
+contextBridge.exposeInMainWorld('storeAPI', {
+  set: (key: string, value: unknown) => ipcRenderer.invoke('set-store', key, value),
+  get: (key: string) => ipcRenderer.invoke('get-store', key),
+
+});

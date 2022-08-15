@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 module.exports = [
   // Add support for native node modules
   {

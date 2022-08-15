@@ -11,15 +11,13 @@
       Your browser does not support the
       <code>audio</code> element.
     </audio>
-    <div class="slider-wrapper">
-      <Slider/>
-    </div>
+    <Bottom />
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import Header from './components/Header/index.vue'
-import Slider from './components/Slider/index.vue'
+import Bottom from './components/Bottom/index.vue'
 
 console.log('ts enable')
 const times = ref(0)
@@ -42,10 +40,11 @@ const showInfo = () => {
     }
   }
 }
+
+
+window.storeAPI.set('unicorn', '🦄');
+// console.log(await window.storeAPI.get('unicorn'));
   // onMounted(())
 </script>
 <style>
-.slider-wrapper {
-  padding: 20px;
-}
 </style>

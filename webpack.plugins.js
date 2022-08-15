@@ -1,3 +1,4 @@
+/* eslint-disable */
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader')
 
