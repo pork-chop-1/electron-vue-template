@@ -4,8 +4,8 @@ import UserMain from '@/views/UserMain/index.vue'
 
 export const routes: Array<RouteRecordRaw> = [
   {
-    path: '/login',
-    name: 'Login',
+    path: '/',
+    name: 'UserMain',
     component: UserMain,
   }
 ];

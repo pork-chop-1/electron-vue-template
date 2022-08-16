@@ -8,8 +8,19 @@ body {
 :root {
   --theme-background-color: rgb(0, 162, 255);
   --theme-foreground-color: #fff;
+  --theme-background-color-transparent: rgba(0, 162, 255, 0.209);
   --theme-background-selected: rgb(136, 211, 255);
   --theme-background-danger: rgb(255, 74, 74);
   --plain-background-color: #fff;
   --plain-foreground-color: #000;
+}
+
+
+// 拖动hooks
+.b-drag-selection {
+  box-sizing: border-box;
+  position: absolute;
+  border: 1px solid var(--theme-background-color);
+  user-select: none;
+  background-color: var(--theme-background-color-transparent);
 }

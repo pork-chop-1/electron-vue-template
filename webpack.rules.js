@@ -21,12 +21,18 @@ module.exports = [
   {
     test: /\.tsx?$/,
     exclude: /(node_modules|\.webpack)/,
-    use: {
+    use: [{
+      loader: 'babel-loader',
+      options: {
+        presets: ['@babel/preset-env', 'env'],
+        plugins: ['@vue/babel-plugin-jsx']
+      }
+    },{
       loader: 'ts-loader',
       options: {
         transpileOnly: true,
       },
-    },
+    }],
   },
   {
     test: /\.vue$/,

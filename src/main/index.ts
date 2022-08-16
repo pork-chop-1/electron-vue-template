@@ -56,8 +56,8 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   mainWindow.webContents.openDevTools();
-  const ses = mainWindow.webContents.session
-  ses.loadExtension('C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.2.1_0')
+  // const ses = mainWindow.webContents.session
+  // ses.loadExtension('C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.2.1_0')
 
 };
 
