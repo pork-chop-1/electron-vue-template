@@ -7,8 +7,8 @@
     </div>
     <div class="body-wrapper" ref="container">
       <div class="body">
-        <div v-for="list in _listData" :key="list.id" class="body-item">
-          <div v-for="key in _headData" :key="key.id" :style="{width: key.width}">{{list[key.id as keyof typeof list]}}</div>
+        <div v-for="list in _listData" :key="list.id" class="body-item-group" @click="listSelect(list.id)">
+          <div v-for="key in _headData" :key="key.id" :style="{width: key.width}" class="body-item">{{list[key.id as keyof typeof list]}}</div>
         </div>
       </div>
     </div>
@@ -50,9 +50,18 @@ const listData = [
 const _headData = computed(() => {
   return headData
 })
+type _DataType = typeof headData[number]
 const _listData = computed(() => {
+  const res = (listData).map((v) => {
+    const t = {...v, _checked: false}
+    return t
+  })
   return listData
 })
+
+const listSelect = (id: string) => {
+
+}
 
 const container = ref<HTMLElement>()
 onMounted(() => {
@@ -93,13 +102,14 @@ onMounted(() => {
     .body {
       width: 100%;
       position: relative;
-      .body-item {
+      .body-item-group {
         position: relative;
         width: 100%;
         height: 56px;
         display: flex;
         align-items: center;
         justify-content: space-around;
+        transition: background-color .2s;
         &::after {
           position: absolute;
           content: "";
@@ -109,6 +119,9 @@ onMounted(() => {
           height: 1px;
           background: #f1f2f4;
           bottom: 0;
+        }
+        &:hover {
+          background-color: var(--hover-bg);
         }
       }
     }

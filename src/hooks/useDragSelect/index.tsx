@@ -9,6 +9,7 @@ function useDragSelect(containerRef: Ref<HTMLElement>,
   watch(selecting, (v) => {
     if(v) {
       containerRef.value.style.userSelect = 'none'
+      window?.getSelection()?.removeAllRanges()
     } else {
       containerRef.value.style.userSelect = 'auto'
     }
@@ -60,8 +61,9 @@ function useDragSelect(containerRef: Ref<HTMLElement>,
     }
     holding.value = false;
     selecting.value = false;
-    if(endHolding.value) {
+    if(endHolding.value && selecting.value) {
       endHolding.value()
+      window?.getSelection()?.removeAllRanges()
     }
     locInfo.width = 0
     locInfo.height = 0
@@ -100,6 +102,11 @@ function useDragSelect(containerRef: Ref<HTMLElement>,
   containerRef.value.addEventListener('pointerdown', down);
   document.addEventListener('pointerup', up);
   document.addEventListener('pointermove', move);
+  // 处理拖动事件
+  document.addEventListener('dragstart', () => {
+    holding.value = false;
+    selecting.value = false;
+  })
   
   const dragRect = () => {
     if (selecting.value) {
