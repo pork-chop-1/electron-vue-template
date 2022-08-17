@@ -7,8 +7,17 @@
     </div>
     <div class="body-wrapper" ref="container">
       <div class="body">
-        <div v-for="list in _listData" :key="list.id" class="body-item-group" @click="listSelect(list.id)">
-          <div v-for="key in _headData" :key="key.id" :style="{width: key.width}" class="body-item">{{list[key.id as keyof typeof list]}}</div>
+        <div v-for="list in _listData" 
+          :key="list.id" 
+          :class="{'body-item-group': true}" 
+          @click="listSelect(list.id)">
+          <div 
+            v-for="key in _headData" 
+            :key="key.id" 
+            :style="{width: key.width}" 
+            class="body-item">
+            {{list[key.id as keyof typeof list]}}
+          </div>
         </div>
       </div>
     </div>
@@ -16,7 +25,7 @@
 </template>
 <script lang="ts" setup>
 import {computed, onMounted, reactive, Ref, ref} from 'vue'
-import useDragSelect from '@/hooks/useDragSelect';
+import useDragSelect from '@/hooks/useDragSelect'
 const headData = [
   {
     id: 'id',
@@ -50,19 +59,18 @@ const listData = [
 const _headData = computed(() => {
   return headData
 })
-type _DataType = typeof headData[number]
-const _listData = computed(() => {
+type _DataType = typeof listData[number] & {_checked: boolean}
+const _listData = computed<_DataType[]>(() => {
   const res = (listData).map((v) => {
     const t = {...v, _checked: false}
     return t
   })
-  return listData
+  return res
 })
 
 const listSelect = (id: string) => {
 
 }
-
 const container = ref<HTMLElement>()
 onMounted(() => {
   if(container.value) {
