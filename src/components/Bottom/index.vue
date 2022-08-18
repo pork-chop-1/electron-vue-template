@@ -28,8 +28,8 @@ import Slider from '@/components/Slider/index.vue'
     bottom: 0;
     width: 100%;
     height: 70px;
-    background: var(--theme-background-color);
-    color: var(--theme-foreground-color);
+    background: var(--theme-bg);
+    color: var(--theme-fg);
     display: flex;
     align-items: center;
     justify-content: space-between;

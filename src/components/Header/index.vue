@@ -9,6 +9,9 @@
         <div class="top-menu">about</div>
       </li>
     </ul>
+    <div class="center">
+      <TopSearch />
+    </div>
     <div class="right">
       <TopProfile />
       <button @click="minimize" id="minimize">
@@ -33,6 +36,7 @@ import {
   MinusOutlined
 } from '@ant-design/icons-vue';
 import TopProfile from './TopProfile.vue';
+import TopSearch from './TopSearch.vue';
 // right buttons
 const isMaximized = ref(false)
 isMaximized.value = window.electronAPI.isMaximized()
@@ -66,8 +70,8 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
 #header-container {
   width: 100%;
   height: 40px;
-  background: var(--theme-background-color);
-  color: var(--theme-foreground-color);
+  background: var(--theme-bg);
+  color: var(--theme-fg);
   -webkit-app-region: drag;
   display: flex;
   align-items: center;
@@ -95,12 +99,14 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
         justify-content: center;
 
         &:hover {
-          background: var(--theme-background-selected);
+          background: var(--theme-bg-selected);
         }
       }
     }
   }
-
+  .center {
+    -webkit-app-region: no-drag;
+  }
   .right {
     -webkit-app-region: no-drag;
     margin-left: auto;
@@ -113,11 +119,11 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
       background: inherit;
 
       &#close:hover {
-        background: var(--theme-background-danger)
+        background: var(--theme-bg-danger)
       }
 
       &:hover {
-        background: var(--theme-background-selected);
+        background: var(--theme-bg-selected);
       }
     }
   }

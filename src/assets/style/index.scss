@@ -6,13 +6,14 @@ body {
 }
 
 :root {
-  --theme-background-color: rgb(0, 162, 255);
-  --theme-foreground-color: #fff;
-  --theme-background-color-transparent: rgba(0, 162, 255, 0.209);
-  --theme-background-selected: rgb(136, 211, 255);
-  --theme-background-danger: rgb(255, 74, 74);
-  --plain-background-color: #fff;
-  --plain-foreground-color: #000;
+  --theme-bg: rgb(0, 162, 255);
+  --theme-fg: #fff;
+  --theme-bg-transparent: rgba(0, 162, 255, 0.209);
+  --theme-bg-selected: rgb(136, 211, 255);
+  --theme-bg-danger: rgb(255, 74, 74);
+  --plain-bg: #fff;
+  --plain-fg: #000;
+  --divide-line-fg: #cbcbcb;
   --hover-bg: #f4f4f4
 }
 
@@ -21,7 +22,7 @@ body {
 .b-drag-selection {
   box-sizing: border-box;
   position: absolute;
-  border: 1px solid var(--theme-background-color);
+  border: 1px solid var(--theme-bg);
   user-select: none;
-  background-color: var(--theme-background-color-transparent);
+  background-color: var(--theme-bg-transparent);
 }
