@@ -10,6 +10,7 @@
       </li>
     </ul>
     <div class="right">
+      <TopProfile />
       <button @click="minimize" id="minimize">
         <minus-outlined />
       </button>
@@ -24,14 +25,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, toRef } from 'vue'
 import {
   CloseOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   MinusOutlined
 } from '@ant-design/icons-vue';
-
+import TopProfile from './TopProfile.vue';
+// right buttons
 const isMaximized = ref(false)
 isMaximized.value = window.electronAPI.isMaximized()
 
@@ -102,7 +104,8 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
   .right {
     -webkit-app-region: no-drag;
     margin-left: auto;
-
+    display: flex;
+    
     >button {
       border: none;
       width: 40px;

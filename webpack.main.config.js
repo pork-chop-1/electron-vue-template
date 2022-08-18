@@ -19,4 +19,14 @@ module.exports = {
     }
 
   },
+  devServer: {
+    proxy: {
+      '/api/**': {
+        target: 'http://[::1]:4000',
+        pathRewrite: { '^/api': '' },
+        secure: false,
+        changeOrigin: true
+      },
+    },
+  },
 };

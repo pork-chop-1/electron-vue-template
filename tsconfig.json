@@ -16,7 +16,7 @@
     "composite": true,
     "paths": {
       "*": ["node_modules/*"],
-      "@/*": ["src/*"]
+      "@/*": ["./src/*", "src/**/*.vue"]
     }
   },
   "include": ["src/**/*"],

@@ -6,6 +6,12 @@ const path = require('path')
 rules.push({
   test: /\.css$/,
   use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+}, {
+  test: /\.(jpe?g|png|gif|svg)$/i, 
+  loader: 'file-loader',
+  options: {
+    name: 'images/[name].[ext]'
+  }
 });
 
 module.exports = {
@@ -14,7 +20,7 @@ module.exports = {
   },
   plugins: plugins,
   resolve: {
-    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
+    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.vue'],
     alias: {
       '@': path.resolve('src')
     }
