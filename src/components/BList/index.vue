@@ -1,79 +1,130 @@
 <template>
-  <div class="list-wrapper">
-    <div class="header-wrapper">
-      <div class="header">
-        <div v-for="item in _headData" :key="item.id" :style="{width: item.width}">{{item.name}}</div>
-      </div>
-    </div>
-    <div class="body-wrapper" ref="container">
-      <div class="body">
-        <div v-for="list in _listData" 
-          :key="list.id" 
-          :class="{'body-item-group': true}" 
-          @click="listSelect(list.id)">
-          <div 
-            v-for="key in _headData" 
-            :key="key.id" 
-            :style="{width: key.width}" 
-            class="body-item">
-            {{list[key.id as keyof typeof list]}}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <table class="list-wrapper">
+    <thead class="header">
+      <tr>
+        <td class="header-item" v-if="rowSelection?.selectedRowKeys">
+          <a-checkbox></a-checkbox>
+        </td>
+        <td 
+          v-for="item in columns" 
+          :key="item.key" 
+          :style="{ width: item.width }" 
+          class="header-item">
+          <slot name="headerCell" :column="item">
+            {{ item.title }}
+          </slot>
+        </td>
+      </tr>
+    </thead>
+    <tbody class="body" ref="container">
+      <tr v-for="list in dataSource" 
+        :key="list.key" 
+        :class="{ 'body-item-group': true }" 
+        @click="listSelect(list.id)">
+        <td class="body-item" v-if="rowSelection?.selectedRowKeys">
+          <a-checkbox v-model:checked="checkList[list.key as keyof typeof checkList]"></a-checkbox>
+        </td>
+        <td v-for="key in columns" 
+          :key="key.key" 
+          :style="{ width: key.width }" 
+          class="body-item">
+          <slot name="bodyCell" :column="key" :record="list">
+            {{ list[key.key as keyof typeof list] }}
+          </slot>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 <script lang="ts" setup>
-import {computed, onMounted, reactive, Ref, ref} from 'vue'
+import { computed, ComputedRef, onMounted, PropType, reactive, Ref, ref, toRef, watch } from 'vue'
 import useDragSelect from '@/hooks/useDragSelect'
-const headData = [
-  {
-    id: 'id',
-    name: '标题',
-    width: '20%'
+
+export type ColumnsType = {
+  key: number | string,
+  title: number | string,
+  width?: string,
+  [otherKey: string]: any
+}
+
+export type DataSourceType = {
+  key: number | string,
+  [otherKey: string]: any
+}
+
+const props = defineProps({
+  columns: {
+    type: Array as PropType<ColumnsType[]>,
+    require: true,
   },
-  {
-    id: 'content',
-    name: '标题',
-    width: '80%'
-  }
-]
-const listData = [
-  {
-    id: '1',
-    content: ' git show --textconv :src/components/Bottom/index.vue [49ms]'
+  dataSource: {
+    type: Array as PropType<DataSourceType[]>,
+    require: true,
   },
-  {
-    id: '2',
-    content: '57.184Z] > git show --textconv :src/com'
+  rowSelection: {
+    type: Object as PropType<{
+      selectedRowKeys: (string|number)[],
+      onChange: (arg1: (string|number)[]) => void
+    }>,
+    require: false,
   },
-  {
-    id: '3',
-    content: 'om https://github.com/pork-chop-1/el'
-  },
-  {
-    id: '4',
-    content: ' git ls-files --stage '
-  },
-]
-const _headData = computed(() => {
-  return headData
 })
-type _DataType = typeof listData[number] & {_checked: boolean}
-const _listData = computed<_DataType[]>(() => {
-  const res = (listData).map((v) => {
-    const t = {...v, _checked: false}
-    return t
-  })
-  return res
+const columns = toRef(props, 'columns') as Ref<ColumnsType[]>
+const dataSource = toRef(props, 'dataSource') as Ref<DataSourceType[]>
+console.log(props);
+
+
+let checkList:Ref<{[key: string | number]: boolean}> = ref({})
+dataSource.value.forEach(v => {
+  checkList.value[v.key] = false
 })
 
-const listSelect = (id: string) => {
+if(props.rowSelection) {
+  // emits('update:selectList', selectList)
+  console.log('rowSelection');
+  
+  const rowSelection = reactive(props.rowSelection)
+  // watch(reactive(rowSelection.selectedRowKeys), (list) => {
+  //   // console.log(list);
+  //   let res: {
+  //     [x: string]: boolean;
+  //   } = {}
+  //   dataSource.value.forEach(v => {
+  //     res[v.key] = list?.indexOf(v.key) !== -1
+  //   })
+  //   // console.log(res);
+    
+  //   checkList.value = res
+  //   console.log(rowSelection.selectedRowKeys)
+  // })
+
+  watch(checkList, (v) => {
+    let res: (string | number)[] = []
+    Object.keys(v).forEach(key => {
+      if(v[key]) {
+        res.push(key)
+      }
+    })
+    console.log(res);
+    
+    // rowSelection.selectedRowKeys = res
+    rowSelection.onChange(res)
+  })
+}
+
+// ref(dataSource.value.map(v => {
+//   return {[v.key]: false}
+// }))
+// watch(dataSource, () => {
+
+// })
+
+const listSelect = (id: string | number) => {
 
 }
 const container = ref<HTMLElement>()
 onMounted(() => {
-  if(container.value) {
+  if (container.value) {
     let {
       locInfo,
       holding,
@@ -86,16 +137,41 @@ onMounted(() => {
 })
 </script>
 <style lang="scss">
-  .list-wrapper {
-    position: relative;
+.list-wrapper {
+  position: relative;
+  width: 100%;
+
+  .header {
     width: 100%;
-    .header{
+    height: 56px;
+    position: relative;
+
+    &::after {
+      position: absolute;
+      content: "";
+      display: block;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #f1f2f4;
+      bottom: 0;
+    }
+
+    .header-item {
+      padding: 16px
+    }
+  }
+
+  .body {
+    width: 100%;
+    position: relative;
+
+    .body-item-group {
+      position: relative;
       width: 100%;
       height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      position: relative;
+      transition: background-color .2s;
+
       &::after {
         position: absolute;
         content: "";
@@ -106,32 +182,15 @@ onMounted(() => {
         background: #f1f2f4;
         bottom: 0;
       }
-    }
-    .body {
-      width: 100%;
-      position: relative;
-      .body-item-group {
-        position: relative;
-        width: 100%;
-        height: 56px;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        transition: background-color .2s;
-        &::after {
-          position: absolute;
-          content: "";
-          display: block;
-          left: 0;
-          right: 0;
-          height: 1px;
-          background: #f1f2f4;
-          bottom: 0;
-        }
-        &:hover {
-          background-color: var(--hover-bg);
-        }
+
+      &:hover {
+        background-color: var(--hover-bg);
+      }
+
+      .body-item {
+        padding: 16px
       }
     }
   }
+}
 </style>
