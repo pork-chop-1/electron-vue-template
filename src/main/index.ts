@@ -58,7 +58,7 @@ const createWindow = (): void => {
   mainWindow.webContents.openDevTools();
   const ses = mainWindow.webContents.session
   ses.loadExtension(
-    'C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.2.1_0',
+    'C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.2.1_1',
     {allowFileAccess: true}
   )
 

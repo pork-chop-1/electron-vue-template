@@ -18,8 +18,14 @@
         <minus-outlined />
       </button>
       <button @click="maximize" id="maximize">
-        <fullscreen-outlined v-show="!isMaximized" />
-        <fullscreen-exit-outlined v-show="isMaximized" />
+          <svg class="icon key-button" aria-hidden="true" v-show="!isMaximized">
+            <use xlink:href="#icon-3zuidahua-1"></use>
+          </svg>
+          <svg class="icon key-button" aria-hidden="true" v-show="isMaximized">
+            <use xlink:href="#icon-3zuidahua-3"></use>
+          </svg>
+        <!-- <fullscreen-outlined v-show="!isMaximized" />
+        <fullscreen-exit-outlined v-show="isMaximized" /> -->
       </button>
       <button @click="close" id="close">
         <close-outlined />
@@ -117,6 +123,9 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
       width: 40px;
       height: 40px;
       background: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &#close:hover {
         background: var(--theme-bg-danger)
@@ -126,6 +135,11 @@ window.electronAPI.isMaximizedInfo((_event, value) => {
         background: var(--theme-bg-selected);
       }
     }
+  }
+  .key-button {
+    width: 14px;
+    height: 14px;
+    fill: #fff
   }
 }
 </style>

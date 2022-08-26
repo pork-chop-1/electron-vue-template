@@ -48,7 +48,7 @@
 </template>
 <script lang="ts" setup>
 import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue';
-import BList from '@/components/BList/index.vue'
+import BList from '@/components/BTable/index.vue'
 import { reactive, ref } from 'vue';
 const columns = [
   {
