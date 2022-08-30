@@ -32,6 +32,7 @@
 import { ref, toRef, watch, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
 import { QRLogin } from '@/api/Login/index'
+import {useUser} from '@/store/user'
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -80,6 +81,7 @@ const refreshQRImg = async () => {
 
 const checkingStatus = ref(false)
 
+const userStore = useUser()
 const checkQRStatus = async () => {
   const res = await QRLogin.checkQR(key.value)
   qrStatus.value.msg = res.message
@@ -93,6 +95,7 @@ const checkQRStatus = async () => {
     window.storeAPI.set('api', res.cookie)
     _visible.value = false
     message.success('登录成功')
+    userStore.getProfiles()
   } 
   
   if(checkingStatus.value) {

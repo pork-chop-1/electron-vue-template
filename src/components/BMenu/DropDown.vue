@@ -3,8 +3,9 @@
     <slot></slot>
   </div>
 </template>
-<script lang="ts" setup>import { ref } from 'vue';
-
+<script lang="ts" setup>
+import { ref, toRef, watch } from 'vue';
+import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps({
   visible: {
@@ -15,22 +16,40 @@ const props = defineProps({
 const emits = defineEmits(['update:visible'])
 
 const container = ref<HTMLElement>()
+const lastModify = ref<number>(0)
 
-const closeHandler = (e: MouseEvent) => {
-  if (props.visible === false) {
-    return
-  }
-  console.log(props.visible)
-  const element = e.target
+onClickOutside(container, (event) => {
+  console.log(event)
+  emits('update:visible', false)
+})
+// const visible = toRef(props, 'visible')
+// watch(visible, (v) => {
+//   lastModify.value = Date.now()
+// })
 
-  if (element && container.value != null) {
-    if (!container.value.contains(element as HTMLElement)) {
-      // document.removeEventListener('click', closeHandler)
-      emits('update:visible', false)
-    }
-  }
-}
-document.addEventListener('click', closeHandler, true)
+
+
+// const closeHandler = (e: MouseEvent) => {
+//   if((Date.now() - lastModify.value) < 100) {
+//     return
+//   }
+//   if (props.visible === false) {
+//     return
+//   } else {
+//     // Math.
+//   }
+//   // console.log(props.visible)
+//   const element = e.target
+
+//   if (element && container.value != null) {
+//     if (!container.value.contains(element as HTMLElement)) {
+//       // document.removeEventListener('click', closeHandler)
+//       emits('update:visible', false)
+//     }
+//   } else {
+//   }
+// }
+// document.addEventListener('click', closeHandler)
 </script>
 <style>
 </style>

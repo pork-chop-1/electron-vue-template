@@ -17,19 +17,19 @@
       </tr>
     </thead>
     <tbody class="body" ref="container">
-      <tr v-for="list in dataSource" 
-        :key="list.key" 
+      <tr v-for="dataItem in dataSource" 
+        :key="dataItem.key" 
         :class="{ 'body-item-group': true }" 
-        @click="listSelect(list.id)">
+        @click="listSelect(dataItem.id)">
         <td class="body-item" v-if="rowSelection?.selectedRowKeys">
-          <a-checkbox v-model:checked="checkList[list.key as keyof typeof checkList]"></a-checkbox>
+          <a-checkbox v-model:checked="checkList[dataItem.key as keyof typeof checkList]"></a-checkbox>
         </td>
         <td v-for="key in columns" 
           :key="key.key" 
           :style="{ width: key.width }" 
           class="body-item">
-          <slot name="bodyCell" :column="key" :record="list">
-            {{ list[key.key as keyof typeof list] }}
+          <slot name="bodyCell" :column="key" :record="dataItem">
+            {{ dataItem[key.key as keyof typeof dataItem] }}
           </slot>
         </td>
       </tr>
@@ -69,14 +69,15 @@ const props = defineProps({
     require: false,
   },
 })
-const columns = toRef(props, 'columns') as Ref<ColumnsType[]>
-const dataSource = toRef(props, 'dataSource') as Ref<DataSourceType[]>
-console.log(props);
+// const columns = reactive(props.columns as ColumnsType[])
+const columns = toRef(props, 'columns')
+// const dataSource = reactive(props.dataSource as DataSourceType[])
+const dataSource = toRef(props, 'dataSource')
 
 
-let checkList:Ref<{[key: string | number]: boolean}> = ref({})
-dataSource.value.forEach(v => {
-  checkList.value[v.key] = false
+let checkList = reactive<{[key: string | number]: boolean}>({})
+dataSource.value?.forEach(v => {
+  checkList[v.key] = false
 })
 
 if(props.rowSelection) {
@@ -109,7 +110,9 @@ if(props.rowSelection) {
     
     // rowSelection.selectedRowKeys = res
     rowSelection.onChange(res)
-  })
+  }), {
+    deep: true
+  }
 }
 
 // ref(dataSource.value.map(v => {

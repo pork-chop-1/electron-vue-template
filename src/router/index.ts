@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 
 import {staticRoutes} from './staticPage'
 import DayRecommend from '@/views/DayRecommend/index.vue'
+import Playlist from '@/views/Playlist/index.vue'
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -9,7 +10,15 @@ export const routes: Array<RouteRecordRaw> = [
     name: 'DayRecommend',
     component: DayRecommend,
     meta: {
-      description: '发现音乐'
+      description: '每日推荐'
+    }
+  },
+  {
+    path: '/playList/:id',
+    name: 'Playlist',
+    component: Playlist,
+    meta: {
+      description: '歌单详情'
     }
   },
 ];

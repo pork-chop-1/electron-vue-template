@@ -13,4 +13,5 @@ const app = createApp(App)
 app.use(Antd)
 app.use(router)
 setupStore(app)
+
 app.mount('#root')
