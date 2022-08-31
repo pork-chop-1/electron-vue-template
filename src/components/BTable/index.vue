@@ -39,18 +39,7 @@
 <script lang="ts" setup>
 import { computed, ComputedRef, onMounted, PropType, reactive, Ref, ref, toRef, watch } from 'vue'
 import useDragSelect from '@/hooks/useDragSelect'
-
-export type ColumnsType = {
-  key: number | string,
-  title: number | string,
-  width?: string,
-  [otherKey: string]: any
-}
-
-export type DataSourceType = {
-  key: number | string,
-  [otherKey: string]: any
-}
+import { ColumnsType, DataSourceType } from '.';
 
 const props = defineProps({
   columns: {
@@ -61,6 +50,7 @@ const props = defineProps({
     type: Array as PropType<DataSourceType[]>,
     require: true,
   },
+  /** 可选：列表多选 */
   rowSelection: {
     type: Object as PropType<{
       selectedRowKeys: (string|number)[],
@@ -80,6 +70,7 @@ dataSource.value?.forEach(v => {
   checkList[v.key] = false
 })
 
+// 
 if(props.rowSelection) {
   // emits('update:selectList', selectList)
   console.log('rowSelection');

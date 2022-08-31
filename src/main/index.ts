@@ -16,8 +16,10 @@ const createWindow = (): void => {
     height: 600,
     width: 1000,
     webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
+      // 是由electron forge webpack插件提供的preload路径
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY 
     },
+    // 表示不需要系统自动提供的外边框，需要自己实现
     frame: false,
     minHeight: 600,
     minWidth: 1000,
@@ -31,6 +33,7 @@ const createWindow = (): void => {
     mainWindow.webContents.send('isMaximizedInfo', false)
   })
 
+  // 由于electron安全支持的原因，不能直接访问文件系统，而是需要自己定义一个协议
   protocol.registerFileProtocol(
     'b-media',
     function (request, callback) {
@@ -55,7 +58,10 @@ const createWindow = (): void => {
   // });
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
+  // 开启后，自动打开开发者工具
   mainWindow.webContents.openDevTools();
+
+  // 加载vue开发工具
   const ses = mainWindow.webContents.session
   ses.loadExtension(
     'C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.2.1_0',
@@ -65,6 +71,7 @@ const createWindow = (): void => {
 };
 
 app.whenReady().then(() => {
+  // 用于初始化与render通信
   initIpcMainHandler()
 
   createWindow()

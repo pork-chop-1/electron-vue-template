@@ -8,6 +8,8 @@ body {
 :root {
   --theme-bg: rgb(0, 162, 255);
   --theme-fg: #fff;
+  --theme-bg-darker: rgb(0, 146, 230);
+  --theme-fg-darker: rgb(184, 184, 184);
   --theme-bg-transparent: rgba(0, 162, 255, 0.209);
   --theme-bg-selected: rgb(136, 211, 255);
   --theme-bg-danger: rgb(255, 74, 74);
@@ -25,4 +27,35 @@ body {
   border: 1px solid var(--theme-bg);
   user-select: none;
   background-color: var(--theme-bg-transparent);
+}
+
+a {
+  color: var(--plain-fg);
+  text-decoration: none;
+  background-color: transparent; // remove the gray background on active links in IE 10.
+  outline: none;
+  cursor: pointer;
+  transition: color 0.3s;
+  -webkit-text-decoration-skip: objects; // remove gaps in links underline in iOS 8+ and Safari 8+.
+
+  &:hover {
+    color: var(--theme-bg);
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: var(--theme-bg);
+    text-decoration: underline;
+  }
+
+  // https://github.com/ant-design/ant-design/issues/22503
+  &:focus {
+    text-decoration: none;
+    outline: none;
+  }
+
+  &[disabled] {
+    color: none;
+    cursor: not-allowed;
+  }
 }

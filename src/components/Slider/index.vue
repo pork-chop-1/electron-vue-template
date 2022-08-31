@@ -1,16 +1,27 @@
 <template>
-  <div ref="container" class="slider-container">
-    <div ref="button" @mousedown="mousedown" class="slider-button"></div>
+  <div @mousedown="mousedown" class="slider-container">
+    <div class="slider-pointer"></div>
     <div class="background-load-bar"></div>
     <div class="foreground-load-bar"></div>
   </div>
-  <div>{{ importantInfo.percentage }}</div>
+  <div>{{ percentage }}</div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, toRef } from 'vue';
+
+const props = defineProps<{
+  // mouseDown: (percentage: number) => void,
+  // mouseMove: (percentage: number) => void,
+  // mouseUp: (percentage: number) => void,
+  width: number,
+  percentage: number
+}>()
+
+const emits = defineEmits(['update:percentage'])
+const percentage = toRef(props, 'percentage')
+const width = toRef(props, 'width')
 
 const buttonRadius = 8
-const width = 300
 
 const container = ref<HTMLElement>()
 const button = ref<HTMLElement>()
@@ -21,32 +32,40 @@ const foregroundStyle = reactive({
   width: '0px'
 })
 
-const importantInfo = reactive({
-  percentage: 0
-})
-
-const setInfo = (percentage: number) => {
-  importantInfo.percentage = percentage
+const setLoc = (left: number) => {
+  foregroundStyle.width = `${left}px`
+  emits('update:percentage', percentage)
 }
 
 const mousedown = (e: MouseEvent) => {
-  var initLeft = container.value?.offsetLeft
+  setLoc(e.offsetX)
   document.onmousemove = (moveEvent: MouseEvent) => {
-    var left = moveEvent.pageX
-    if (initLeft) {
-      let computedLeft = left - initLeft - buttonRadius
-      computedLeft > width - buttonRadius && (computedLeft = width - buttonRadius)
-      computedLeft < 0 - buttonRadius && (computedLeft = 0 - buttonRadius)
-      buttonStyle.left = computedLeft + 'px'
-      setInfo(Math.floor((computedLeft + buttonRadius) / width * 100))
-      foregroundStyle.width = computedLeft + buttonRadius + 'px'
-    }
+    setLoc(moveEvent.offsetX)
   }
   document.onmouseup = (moveEvent: MouseEvent) => {
     document.onmousemove = null
     document.onmouseup = null
   }
 }
+
+// const mousedown = (e: MouseEvent) => {
+//   var initLeft = container.value?.offsetLeft
+//   document.onmousemove = (moveEvent: MouseEvent) => {
+//     var left = moveEvent.pageX
+//     if (initLeft) {
+//       let computedLeft = left - initLeft - buttonRadius
+//       computedLeft > width - buttonRadius && (computedLeft = width - buttonRadius)
+//       computedLeft < 0 - buttonRadius && (computedLeft = 0 - buttonRadius)
+//       buttonStyle.left = computedLeft + 'px'
+//       setInfo(Math.floor((computedLeft + buttonRadius) / width * 10000) / 100)
+//       foregroundStyle.width = computedLeft + buttonRadius + 'px'
+//     }
+//   }
+//   document.onmouseup = (moveEvent: MouseEvent) => {
+//     document.onmousemove = null
+//     document.onmouseup = null
+//   }
+// }
 </script>
 <style lang="scss" scoped>
 .slider-container {
@@ -57,14 +76,14 @@ const mousedown = (e: MouseEvent) => {
   // border-radius: 2px;
   user-select: none;
 
-  .slider-button {
+  .slider-pointer {
     position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: rgb(0 135 172 / 20%);
+    // width: 16px;
+    // height: 16px;
+    // border-radius: 50%;
+    // background-color: rgb(0 135 172 / 20%);
     left: v-bind('buttonStyle.left');
-    top: -5px;
+    // top: -5px;
   }
 
   .foreground-load-bar {

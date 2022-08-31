@@ -19,7 +19,6 @@ const container = ref<HTMLElement>()
 const lastModify = ref<number>(0)
 
 onClickOutside(container, (event) => {
-  console.log(event)
   emits('update:visible', false)
 })
 // const visible = toRef(props, 'visible')

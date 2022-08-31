@@ -10,9 +10,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import Header from './components/Header/index.vue'
-import Bottom from './components/Bottom/index.vue'
-import LeftMenu from './components/LeftMenu/index.vue'
+import Header from '@/layout/Header/index.vue'
+import Bottom from '@/layout/Bottom/index.vue'
+import LeftMenu from '@/layout/LeftMenu/index.vue'
 import {useUser} from '@/store/user'
 const userStore = useUser()
 userStore.getProfiles()

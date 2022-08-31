@@ -1,10 +1,14 @@
 <template>
+  <!-- 用户头像位置 -->
   <div class="avatar-wrapper" @click="userClickHandler">
     <img :src="profile.userId !== -1 ? profile.avatarUrl : DefaultAvatar" alt="avatar">
   </div>
+  <!-- 用户名位置 -->
   <div class="username-wrapper">
     <div class="username" @click="userClickHandler">{{ profile.userId !== -1 ? profile.nickname : '未登录' }}</div>
   </div>
+
+  <!-- 用户登录弹出框 -->
   <LoginModal v-model:visible="visible" />
 </template>
 <script lang="ts" setup>

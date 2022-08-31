@@ -19,7 +19,37 @@
     <div class="playlist-container">
       <BTable :columns="columns" :data-source="data">
         <template #bodyCell="{ column, record }">
-            {{  record.name  }}
+            <!-- 处理列表中的歌曲名称 -->
+            <template v-if="column.key === 'title'">
+              <router-link :to="`/songDetail/${record.id}`">
+                {{record.title }}
+              </router-link>
+            </template>
+
+            <!-- 处理列表中的艺术家 -->
+            <template v-else-if="column.key === 'artists'">
+              <!-- 艺术家是一个列表 -->
+              <template 
+                v-for="artistInfo, index in record.artists"
+                :key="artistInfo.id"
+              >
+                <router-link :to="`/artistDetail/${artistInfo.id}`">
+                  {{artistInfo.name}}
+                </router-link>
+                <!-- 分离字符最后一个不显示 -->
+                <span v-show="index + 1 !== record.artists.length">/</span>
+              </template>
+            </template>
+
+            <!-- 处理列表中的专辑 -->
+            <template v-else-if="column.key === 'album'">
+              <router-link :to="`/albumDetail/${record.album.id}`">
+                {{record.album.name }}
+              </router-link>
+            </template>
+            <template v-else>
+              {{ record[column.key] }}
+            </template>
         </template>
       </BTable>
     </div>
@@ -27,9 +57,10 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { fillZero } from '@/utils/NumberUtils';
+import { fillZero, convertTime } from '@/utils/NumberUtils';
 import { Playlist, SongType } from '@/api/Playlist'
 import BTable from '@/components/BTable/index.vue'
+import { DataSourceType } from '@/components/BTable';
 
 const dateNumber = ref(fillZero(new Date().getDate(), 2))
 
@@ -40,7 +71,7 @@ const columns = ref([
   },
   {
     title: '歌手',
-    key: 'artist'
+    key: 'artists'
   },
   {
     title: '专辑',
@@ -52,18 +83,7 @@ const columns = ref([
   },
 ])
 
-type DataSourceType = {
-  key: number | string,
-  [otherKey: string]: any
-}
 const data = ref<DataSourceType[] | []>([
-  {
-      key: 'v.name',
-      title: 'v.name',
-      artist: 'v.ar[0]?.name',
-      album: 'v.al.name',
-      length: 'v.dt'
-    }
 ])
 
 onMounted(async () => {
@@ -73,9 +93,10 @@ onMounted(async () => {
     return {
       key: v.name,
       title: v.name,
-      artist: v.ar[0]?.name,
-      album: v.al.name,
-      length: v.dt
+      artists: v.ar,
+      album: v.al,
+      length: convertTime(v.dt).text,
+      id: v.id
     }
   })
 })

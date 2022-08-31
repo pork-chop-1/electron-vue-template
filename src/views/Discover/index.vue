@@ -42,7 +42,7 @@ const dayNumber = ref(fillZero(new Date().getDate(), 2))
 let recommendPlayList: Ref<PlaylistType[] | []> = ref([])
 onMounted(async () => {
   recommendPlayList.value = (await Playlist.highquality(9)).playlists
-  console.log(recommendPlayList)
+  // console.log(recommendPlayList)
 })
 
 </script>

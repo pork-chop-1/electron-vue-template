@@ -10,7 +10,8 @@
     <div class="c">
       <div class="control-wrapper"></div>
       <div class="slider-wrapper">
-        <Slider/>
+        <Slider v-model:percentage="percentage" :width="width"/>
+        <span>{{percentage}}</span>
       </div>
     </div>
     <div class="r">
@@ -20,6 +21,10 @@
 </template>
 <script lang="ts" setup>
 import Slider from '@/components/Slider/index.vue'
+import { ref } from 'vue';
+
+const percentage = ref(0)
+const width = ref(300)
 
 </script>
 <style lang="scss">

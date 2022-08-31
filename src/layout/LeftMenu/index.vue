@@ -9,6 +9,7 @@
 import {staticRoutes} from '@/router/staticPage'
 import {useRouter} from 'vue-router'
 // const topMenu = {}
+// 绑定左侧菜单的点击跳转
 const router = useRouter()
 const clickHandler = (path: string) => {
   router.push(path)

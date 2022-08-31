@@ -59,7 +59,6 @@ export default defineComponent({
     }
   },
   mounted() {
-    console.log(this.$refs.container)
   }
 })
 export type MenuItemType = {
