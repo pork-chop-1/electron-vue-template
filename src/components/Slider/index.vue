@@ -1,6 +1,8 @@
 <template>
-  <div @mousedown="mousedown" class="slider-container">
-    <div class="slider-pointer"></div>
+  <div @mousedown="mousedown" class="slider-container" ref="container">
+    <div class="slider-pointer">
+      <div class="slider-button"></div>
+    </div>
     <div class="background-load-bar"></div>
     <div class="foreground-load-bar"></div>
   </div>
@@ -26,7 +28,7 @@ const buttonRadius = 8
 const container = ref<HTMLElement>()
 const button = ref<HTMLElement>()
 const buttonStyle = reactive({
-  left: '-5px'
+  left: '0px'
 })
 const foregroundStyle = reactive({
   width: '0px'
@@ -34,13 +36,21 @@ const foregroundStyle = reactive({
 
 const setLoc = (left: number) => {
   foregroundStyle.width = `${left}px`
+  buttonStyle.left = `${left}px`
   emits('update:percentage', percentage)
 }
 
 const mousedown = (e: MouseEvent) => {
-  setLoc(e.offsetX)
+  if (!container.value) {
+    return
+  }
+  var left = container.value.getBoundingClientRect().left
+  setLoc(e.pageX - left)
   document.onmousemove = (moveEvent: MouseEvent) => {
-    setLoc(moveEvent.offsetX)
+    var loc = moveEvent.pageX - left
+    loc < 0 && (loc = 0)
+    loc > width.value && (loc = width.value)
+    setLoc(loc)
   }
   document.onmouseup = (moveEvent: MouseEvent) => {
     document.onmousemove = null
@@ -84,6 +94,16 @@ const mousedown = (e: MouseEvent) => {
     // background-color: rgb(0 135 172 / 20%);
     left: v-bind('buttonStyle.left');
     // top: -5px;
+
+    .slider-button {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: rgb(0 135 172 / 20%);
+      top: -8px;
+      left: -8px;
+    }
   }
 
   .foreground-load-bar {
