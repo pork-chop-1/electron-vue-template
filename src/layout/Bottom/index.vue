@@ -1,7 +1,10 @@
 <template>
   <div class="bottom-wrapper">
     <div class="l">
-      <div class="avatar-wrapper"></div>
+      <div class="avatar-wrapper" @click="toggleSongPlane">
+        <!-- todo -->
+        toggle
+      </div>
       <div class="info-wrapper">
         <div class="title"></div>
         <div class="author"></div>
@@ -20,12 +23,18 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { ref, toRef } from 'vue';
 import Slider from '@/components/Slider/index.vue'
-import { ref } from 'vue';
+import {usePlay} from '@/store/play'
 
 const percentage = ref(0)
 const width = ref(300)
-
+// 处理详情开闭
+const playStore = usePlay()
+const opened = toRef(playStore, 'songPlaneOpened')
+const toggleSongPlane = () => {
+  opened.value = !opened.value
+}
 </script>
 <style lang="scss">
   .bottom-wrapper {
@@ -38,5 +47,13 @@ const width = ref(300)
     display: flex;
     align-items: center;
     justify-content: space-between;
+    z-index: 10;
+
+    .l {
+      .avatar-wrapper {
+        width: 40px;
+        height: 40px;
+      }
+    }
   }
 </style>

@@ -59,8 +59,6 @@ import { ref, toRef } from 'vue'
 import {useRouter} from 'vue-router'
 import {
   CloseOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
   MinusOutlined
 } from '@ant-design/icons-vue';
 import TopProfile from './TopProfile.vue';

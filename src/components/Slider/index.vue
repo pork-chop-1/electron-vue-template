@@ -37,17 +37,17 @@ const foregroundStyle = reactive({
 const setLoc = (left: number) => {
   foregroundStyle.width = `${left}px`
   buttonStyle.left = `${left}px`
-  emits('update:percentage', percentage)
+  emits('update:percentage', Math.floor((left) / width.value * 10000) / 100)
 }
 
 const mousedown = (e: MouseEvent) => {
   if (!container.value) {
     return
   }
-  var left = container.value.getBoundingClientRect().left
+  let left = container.value.getBoundingClientRect().left
   setLoc(e.pageX - left)
   document.onmousemove = (moveEvent: MouseEvent) => {
-    var loc = moveEvent.pageX - left
+    let loc = moveEvent.pageX - left
     loc < 0 && (loc = 0)
     loc > width.value && (loc = width.value)
     setLoc(loc)

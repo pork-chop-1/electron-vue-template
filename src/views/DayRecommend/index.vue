@@ -21,9 +21,9 @@
         <template #bodyCell="{ column, record }">
             <!-- 处理列表中的歌曲名称 -->
             <template v-if="column.key === 'title'">
-              <router-link :to="`/songDetail/${record.id}`">
+              <a @click.prevent="toggleSong(record.id)">
                 {{record.title }}
-              </router-link>
+              </a>
             </template>
 
             <!-- 处理列表中的艺术家 -->
@@ -58,9 +58,10 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { fillZero, convertTime } from '@/utils/NumberUtils';
-import { Playlist, SongType } from '@/api/Playlist'
+import { Playlist } from '@/api/Playlist'
 import BTable from '@/components/BTable/index.vue'
 import { DataSourceType } from '@/components/BTable';
+import { usePlay } from '@/store/play'
 
 const dateNumber = ref(fillZero(new Date().getDate(), 2))
 
@@ -101,6 +102,13 @@ onMounted(async () => {
   })
 })
 
+// 点击songName
+
+const playStore = usePlay()
+const toggleSong = (id: string) => {
+  playStore.setSongId(id)
+  playStore.setPlaneStatus(true)
+}
 
 </script>
 <style lang="scss" scoped>
