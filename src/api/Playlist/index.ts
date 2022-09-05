@@ -57,4 +57,14 @@ export const Playlist = {
       }
     })
   },
+  playListDetail: (id: number) => {
+    return request<Response<DailySongsType>>({
+      url: '/playlist/detail',
+      method: 'GET',
+      params: {
+        id
+      }
+    })
+  },
+  
 }

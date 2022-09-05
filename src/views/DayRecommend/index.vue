@@ -16,76 +16,20 @@
         </p>
       </div>
     </div>
-    <div class="playlist-container">
-      <BTable :columns="columns" :data-source="data">
-        <template #bodyCell="{ column, record }">
-            <!-- 处理列表中的歌曲名称 -->
-            <template v-if="column.key === 'title'">
-              <a @click.prevent="toggleSong(record.id)">
-                {{record.title }}
-              </a>
-            </template>
-
-            <!-- 处理列表中的艺术家 -->
-            <template v-else-if="column.key === 'artists'">
-              <!-- 艺术家是一个列表 -->
-              <template 
-                v-for="artistInfo, index in record.artists"
-                :key="artistInfo.id"
-              >
-                <router-link :to="`/artistDetail/${artistInfo.id}`">
-                  {{artistInfo.name}}
-                </router-link>
-                <!-- 分离字符最后一个不显示 -->
-                <span v-show="index + 1 !== record.artists.length">/</span>
-              </template>
-            </template>
-
-            <!-- 处理列表中的专辑 -->
-            <template v-else-if="column.key === 'album'">
-              <router-link :to="`/albumDetail/${record.album.id}`">
-                {{record.album.name }}
-              </router-link>
-            </template>
-            <template v-else>
-              {{ record[column.key] }}
-            </template>
-        </template>
-      </BTable>
-    </div>
+    <SongList :songList="songList"></SongList>
   </div>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { fillZero, convertTime } from '@/utils/NumberUtils';
 import { Playlist } from '@/api/Playlist'
-import BTable from '@/components/BTable/index.vue'
 import { DataSourceType } from '@/components/BTable';
-import { usePlay } from '@/store/play'
 import { SongType } from '@/api/Song';
+import SongList from '@/components/SongList/index.vue'
 
 const dateNumber = ref(fillZero(new Date().getDate(), 2))
 
-const columns = ref([
-  {
-    title: '音乐标题',
-    key: 'title'
-  },
-  {
-    title: '歌手',
-    key: 'artists'
-  },
-  {
-    title: '专辑',
-    key: 'album'
-  },
-  {
-    title: '时长',
-    key: 'length'
-  },
-])
-
-const data = ref<DataSourceType[] | []>([
+const data = ref<DataSourceType[]>([
 ])
 
 const songList = ref<SongType[]>([])
@@ -93,26 +37,7 @@ const songList = ref<SongType[]>([])
 onMounted(async () => {
   const some = await Playlist.recommendSongs()
   songList.value = some.data.dailySongs
-  data.value = some.data.dailySongs.map(v => {
-    return {
-      key: v.name,
-      title: v.name,
-      artists: v.ar,
-      album: v.al,
-      length: convertTime(v.dt).text,
-      id: v.id
-    }
-  })
 })
-
-// 点击songName
-
-const playStore = usePlay()
-const toggleSong = (id: number) => {
-  playStore.setSongList(songList.value)
-  playStore.setSongId(id)
-  playStore.setPlaneStatus(true)
-}
 
 </script>
 <style lang="scss" scoped>

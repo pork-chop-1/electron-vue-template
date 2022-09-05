@@ -21,3 +21,13 @@ export function getAccount() {
     }
   })
 }
+
+export function getLikeList() {
+  return request({
+    url: '/likelist',
+    method: 'GET',
+    params: {
+      // timestamp: new Date().getTime()
+    }
+  })
+}

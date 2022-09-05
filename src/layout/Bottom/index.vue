@@ -15,7 +15,7 @@
           </div>
           <div class="artists">
             <ListCombine :list="artistList" #="{id}">
-              <router-link :to="`/artist/${id}`"></router-link>
+              <router-link :to="`/artistDetail/${id}`"></router-link>
             </ListCombine>
           </div>
         </div>

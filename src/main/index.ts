@@ -59,15 +59,25 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // 开启后，自动打开开发者工具
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // 加载vue开发工具
   const ses = mainWindow.webContents.session
   ses.loadExtension(
-    'C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.2.1_0',
+    'C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.2.1_1',
     {allowFileAccess: true}
   )
 
+  // https://stackoverflow.com/questions/55561808/vue-electron-devtools-throwing-exception
+  // Open dev tools initially when in development mode
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.on("did-frame-finish-load", () => {
+      mainWindow.webContents.once("devtools-opened", () => {
+        mainWindow.focus();
+      });
+      mainWindow.webContents.openDevTools();
+    });
+  }
 };
 
 app.whenReady().then(() => {
