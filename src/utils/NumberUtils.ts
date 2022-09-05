@@ -4,7 +4,7 @@
  * @param fillCount 需要补充到的位数
  */
 export function fillZero(target: number, fillCount: number): string {
-  let toNumb = target.toString()
+  let toNumb = Math.round(target).toString()
   let zeroCount = fillCount - toNumb.length
   if(zeroCount <= 0) {
     return toNumb

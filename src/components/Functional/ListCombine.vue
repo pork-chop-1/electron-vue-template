@@ -9,11 +9,13 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{
-  list: {
+export interface API {
+  listType: {
     name: string,
-    id: string
-  }[]
+    id: string | number
+  }
+}
+const props = defineProps<{
+  list: API["listType"][]
 }>()
-
 </script>

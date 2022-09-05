@@ -62,6 +62,7 @@ import { Playlist } from '@/api/Playlist'
 import BTable from '@/components/BTable/index.vue'
 import { DataSourceType } from '@/components/BTable';
 import { usePlay } from '@/store/play'
+import { SongType } from '@/api/Song';
 
 const dateNumber = ref(fillZero(new Date().getDate(), 2))
 
@@ -87,9 +88,11 @@ const columns = ref([
 const data = ref<DataSourceType[] | []>([
 ])
 
+const songList = ref<SongType[]>([])
+
 onMounted(async () => {
   const some = await Playlist.recommendSongs()
-  console.log(some)
+  songList.value = some.data.dailySongs
   data.value = some.data.dailySongs.map(v => {
     return {
       key: v.name,
@@ -105,7 +108,8 @@ onMounted(async () => {
 // 点击songName
 
 const playStore = usePlay()
-const toggleSong = (id: string) => {
+const toggleSong = (id: number) => {
+  playStore.setSongList(songList.value)
   playStore.setSongId(id)
   playStore.setPlaneStatus(true)
 }
