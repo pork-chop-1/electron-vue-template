@@ -2,14 +2,14 @@
   <div>
     <div class="head-container">
       <div class="cover-wrapper">
-        <img :src="playlistDetail?.coverImgUrl" alt="">
+        <img :src="''" alt="">
       </div>
       <div class="info-wrapper">
         <h2 class="title">
-          {{ playlistDetail?.name }}
+          {{  }}
         </h2>
         <div class="creator">
-          {{ playlistDetail?.creator.nickname }}
+          {{  }}
         </div>
       </div>
     </div>
@@ -24,21 +24,17 @@ import { Playlist, PlaylistDetailType } from '@/api/Playlist'
 import { onBeforeUpdate, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router'
 import { Song, SongType } from '@/api/Song';
+import { getLikeList } from '@/api/User';
 
 const route = useRoute()
 
 const songList = ref<SongType[]>([])
-const playlistDetail = ref<PlaylistDetailType>()
 onMounted(async () => {
-  // https://neteasecloudmusicapi-docs.4everland.app/#/?id=%e8%8e%b7%e5%8f%96%e6%ad%8c%e5%8d%95%e8%af%a6%e6%83%85
-  const id = parseInt(route.params.id as string, 10)
-  const some = await Playlist.playListDetail(id)
+  const some = await getLikeList()
+  console.log(some)
   if (some.code === 200) {
-    playlistDetail.value = some.playlist
-    const trackIdList = some.playlist.trackIds.map((v) => {
-      return v.id
-    })
-    const songDetails = await Song.detail(trackIdList)
+    const likeList = some.ids
+    const songDetails = await Song.detail(likeList.splice(0, 100))
     songList.value = songDetails.songs
 
   }

@@ -23,11 +23,23 @@ export function getAccount() {
 }
 
 export function getLikeList() {
-  return request({
+  return request<{
+    code: number,
+    ids: number[]
+  }>({
     url: '/likelist',
     method: 'GET',
     params: {
       // timestamp: new Date().getTime()
+    }
+  })
+}
+export function getUserDetail(uid: number) {
+  return request({
+    url: '/user/detail',
+    method: 'GET',
+    params: {
+      uid
     }
   })
 }

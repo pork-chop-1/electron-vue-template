@@ -29,10 +29,11 @@ const props = defineProps<{
   url: string,
   endTime: number,
   currentTime: number,
-  playing: boolean
+  playing: boolean,
+  volume?: number
 }>()
 
-const {url, currentTime, playing, endTime} = toRefs(props)
+const {url, currentTime, playing, endTime, volume} = toRefs(props)
 
 // 使用v-model暴露当前时间和长度的改变方式
 const emits = defineEmits(['update:currentTime', 'update:endTime'])
@@ -40,10 +41,13 @@ const emits = defineEmits(['update:currentTime', 'update:endTime'])
 // 获slider子组件中的isDragging
 // https://juejin.cn/post/7031921830852034591
 const slider = ref<SliderAPI | null>(null)
-const isDragging = computed(() => slider.value)
+const isDragging = computed(() => slider.value?.dragging)
 
 // 进度条百分比，可直接改变
 const percentage = ref(0)
+watch(percentage, (v) => {
+  emits('update:currentTime', v / 100 * endTime.value)
+})
 
 const audio = ref<HTMLMediaElement | null>(null)
 onMounted(() => {
@@ -60,11 +64,11 @@ const loadedmetadata = () => {
 }
 
 const timeupdate = () => {
-  emits('update:currentTime', audio.value?.currentTime)
   if(isDragging.value) {
   } else {
-    if(endTime.value !== 0) {
-      percentage.value = Math.round(currentTime.value / endTime.value * 100)
+    // emits('update:currentTime', audio.value?.currentTime)
+    if(endTime.value !== 0 && audio.value) {
+      percentage.value = audio.value?.currentTime / endTime.value * 100
     }
   }
 }
@@ -86,6 +90,12 @@ const mouseUp = (newPer: number) => {
   if(endTime.value !== 0) {
     audio.value && (audio.value.currentTime = newPer / 100 * endTime.value)
   }
+}
+
+if(volume != null && volume.value != null) {
+  watch(volume, (v) => {
+    audio.value && (audio.value.volume = v as number)
+  })
 }
 </script>
 <style lang="scss">

@@ -1,5 +1,6 @@
 import { Song, SongType } from '@/api/Song';
 import { defineStore } from 'pinia';
+import StoragePlugin from './StoragePlugin';
 
 /*
 {
@@ -26,7 +27,9 @@ export type PlayStateType = {
   currentSongIndex: number,
   playing: boolean,
   songList: SongType[],
-  playMode: 'cycle' | 'single' | 'random'
+  playMode: 'cycle' | 'single' | 'random',
+  currentTime: number,
+  volume: number,
 }
 
 export const usePlay = defineStore('play', {
@@ -35,7 +38,9 @@ export const usePlay = defineStore('play', {
     playing: false,
     currentSongIndex: -1,
     songList: [],
-    playMode: 'cycle'
+    playMode: 'cycle',
+    currentTime: 0,
+    volume: 0
   }),
   getters: {
     songInfo(state) {
@@ -91,7 +96,8 @@ export const usePlay = defineStore('play', {
     togglePlaying() {
       this.playing = !this.playing
     }
-  }
+  },
+  persist: true
 });
 
 export default usePlay;

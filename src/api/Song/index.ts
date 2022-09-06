@@ -55,7 +55,7 @@ export type SongURLType = {
 }
 
 export const Song = {
-  detail: (id: string | string[]) => {
+  detail: (id: number | number[]) => {
     const ids = id instanceof Array ? id.join(',') : id;
     return request<SongDetailRes>({
       url: '/song/detail',

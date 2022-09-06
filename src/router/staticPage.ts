@@ -1,6 +1,7 @@
 import { RouteRecordRaw } from "vue-router";
 import Discover from '@/views/Discover/index.vue'
 import PrivateFM from '@/views/PrivateFM/index.vue'
+import MyLikeList from '@/views/MyLikeList/index.vue'
 
 export const staticRoutes: Array<RouteRecordRaw> = [
   {
@@ -17,6 +18,14 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     component: PrivateFM,
     meta: {
       description: '私人FM'
+    }
+  },
+  {
+    path: '/MyLikeList',
+    name: 'MyLikeList',
+    component: MyLikeList,
+    meta: {
+      description: '我喜欢的音乐'
     }
   }
 ];

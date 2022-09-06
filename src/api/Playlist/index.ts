@@ -29,6 +29,32 @@ export type DailySongsType = {
   }[]
 }
 
+export type PlaylistDetailType = {
+  creator: {
+    accountStatus: number,
+    avatarDetail: {
+      identityIconUrl: string,
+      
+    },
+    avatarImgId: number,
+    avatarUrl: string,
+    backgroundUrl: string,
+    expertTags: string[],
+    nickname: string,
+    signature: string,
+
+  },
+  tags: string[],
+  /** 部分歌曲 */
+  tracks: SongType[],
+  /** 全部id */
+  trackIds: {
+    id: number,
+    uid: number
+  }[],
+  privileges: []
+} & PlaylistType
+
 export const Playlist = {
   related: (limit: number) => {
     return request({
@@ -58,7 +84,10 @@ export const Playlist = {
     })
   },
   playListDetail: (id: number) => {
-    return request<Response<DailySongsType>>({
+    return request<{
+      code: number,
+      playlist: PlaylistDetailType
+    }>({
       url: '/playlist/detail',
       method: 'GET',
       params: {

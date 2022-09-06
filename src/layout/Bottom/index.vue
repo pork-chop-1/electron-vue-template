@@ -11,10 +11,10 @@
         </div>
         <div class="info-wrapper">
           <div class="title">
-            {{currentSongInfo?.name}}
+            {{  currentSongInfo?.name  }}
           </div>
           <div class="artists">
-            <ListCombine :list="artistList" #="{id}">
+            <ListCombine :list="artistList" #="{ id }">
               <router-link :to="`/artistDetail/${id}`"></router-link>
             </ListCombine>
           </div>
@@ -47,26 +47,36 @@
         </div>
       </div>
       <div class="slider-wrapper">
-        <div class="current-time">{{currentTimeFormat}}</div>
-        <BPlayer 
-          v-model:currentTime="currentTime" 
-          v-model:endTime="endTime"
-          :url="currentSongUrl"
-          :playing="playing" />
-        <div class="end-time">{{endTimeFormat}}</div>
+        <div class="current-time">{{  currentTimeFormat  }}</div>
+        <BPlayer v-model:currentTime="currentTime" v-model:endTime="endTime" :url="currentSongUrl" :playing="playing"
+          :volume="volume / 100" />
+        <div class="end-time">{{  endTimeFormat  }}</div>
       </div>
     </div>
     <div class="r">
-      <button>list</button>
+      <div class="volume-control">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-soundsize"></use>
+        </svg>
+        <div class="volume-container">
+          <Slider v-model:percentage="volume" orientation="vertical" :width="70" :height="5" />
+        </div>
+      </div>
+      <div class="current-playlist">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-musiclist"></use>
+        </svg>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { computed, ref, toRef, watch } from 'vue';
 import BPlayer from '@/components/BPlayer/index.vue'
-import ListCombine, {API as ListAPI} from '@/components/Functional/ListCombine.vue';
-import {usePlay} from '@/store/play'
-import {convertTime} from '@/utils/NumberUtils'
+import ListCombine, { API as ListAPI } from '@/components/Functional/ListCombine.vue';
+import { usePlay } from '@/store/play'
+import { convertTime } from '@/utils/NumberUtils'
+import Slider from '@/components/Slider/index.vue';
 
 const playStore = usePlay()
 // 处理详情开闭
@@ -85,7 +95,7 @@ const currentCoverImg = ref('')
 // 艺术家信息
 const artistList = ref<ListAPI['listType'][]>([])
 watch(currentSongInfo, async (v) => {
-  if(v != null && v.id !== -1) {
+  if (v != null && v.id !== -1) {
     const urlRes = await playStore.getSongUrl(v.id)
     urlRes && urlRes.data.length > 0 && (currentSongUrl.value = urlRes.data[0].url)
     currentCoverImg.value = v.al.picUrl
@@ -94,7 +104,7 @@ watch(currentSongInfo, async (v) => {
 })
 
 
-const currentTime = ref(0)
+const currentTime = toRef(playStore, 'currentTime')
 const endTime = ref(0)
 const currentTimeFormat = computed(() => {
   return convertTime(currentTime.value * 1000).text
@@ -114,111 +124,174 @@ const prev = () => {
 const next = () => {
   playStore.nextSong()
 }
+
+// 音量相关
+const volume = toRef(playStore, 'volume')
 </script>
-<style lang="scss">
-  .bottom-wrapper {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: 70px;
-    background: var(--theme-bg);
-    color: var(--theme-fg);
+<style lang="scss" scoped>
+.bottom-wrapper {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 70px;
+  background: var(--theme-bg);
+  color: var(--theme-fg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+
+  .l {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 10;
+    box-sizing: border-box;
+    width: 280px;
+    height: 100%;
+    padding: 10px;
 
-    .l {
-      display: flex;
-      box-sizing: border-box;
-      width: 280px;
-      height: 100%;
-      padding: 10px;
-      .cover-wrapper {
-        position: relative;
-        width: 50px;
-        height: 50px;
-        border-radius: 5px;
-        overflow: hidden;
-        flex-shrink: 0;
-        .song-cover {
-          width: 100%;
-          height:100%;
-        }
-        .hide-mask {
-          position: absolute;
-          box-sizing: border-box;
-          padding: 10px;
-          width: 100%;
-          height:100%;
-          left: 0;
-          top: 0;
-          visibility: hidden;
-          background: rgba(0, 0, 0, 0.168);
-          svg {
-            fill: #fff;
-            width: 100%;
-            height:100%;
-          }
+    .cover-wrapper {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      overflow: hidden;
+      flex-shrink: 0;
 
-        }
-
-        &:hover .hide-mask {
-          visibility: visible;
-        }
+      .song-cover {
+        width: 100%;
+        height: 100%;
       }
 
-      .info-wrapper {
-        
+      .hide-mask {
+        position: absolute;
+        box-sizing: border-box;
+        padding: 10px;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        visibility: hidden;
+        background: rgba(0, 0, 0, 0.168);
+
+        svg {
+          fill: #fff;
+          width: 100%;
+          height: 100%;
+        }
+
+      }
+
+      &:hover .hide-mask {
+        visibility: visible;
       }
     }
 
-    .c {
-      max-width: 500px;
-      height: 100%;
-      .control-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 50%;
+    .info-wrapper {}
+  }
 
-        &>div {
-          font-size: 20px;
-          width: 30px;
+  .c {
+    max-width: 500px;
+    height: 100%;
+
+    .control-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50%;
+
+      &>div {
+        font-size: 20px;
+        width: 30px;
+        height: 30px;
+        margin: 0 10px;
+        cursor: pointer;
+
+        svg {
           height: 30px;
-          margin: 0 10px;
-          cursor: pointer;
-          
-          svg {
-            height: 30px;
-            width: 30px;
-            box-sizing: border-box;
-            padding: 3px;
-            fill: var(--theme-fg);
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.11);
-          }
+          width: 30px;
+          box-sizing: border-box;
+          padding: 3px;
+          fill: var(--theme-fg);
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.11);
+        }
 
-          &:hover svg {
-            fill: var(--plain-bg);
-            background: rgba(255, 255, 255, 0.397);
-          }
+        &:hover svg {
+          fill: var(--plain-bg);
+          background: rgba(255, 255, 255, 0.397);
         }
       }
+    }
 
-      .slider-wrapper {
-        height: 50%;
+    .slider-wrapper {
+      height: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .current-time,
+      .end-time {
+        width: 80px;
         display: flex;
         align-items: center;
         justify-content: center;
-
-        .current-time, .end-time {
-          width: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
       }
     }
   }
+
+  .r {
+    display: flex;
+    .volume-control, .current-playlist {
+      position: relative;
+      margin-right: 10px;
+      font-size: 20px;
+      width: 30px;
+      height: 30px;
+      margin: 0 10px;
+      cursor: pointer;
+
+      svg {
+        height: 30px;
+        width: 30px;
+        box-sizing: border-box;
+        padding: 3px;
+        fill: var(--theme-fg);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.11);
+
+      }
+
+      &:hover svg {
+        fill: var(--plain-bg);
+        background: rgba(255, 255, 255, 0.397);
+      }
+
+      .volume-container {
+        // display: none;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+        display: flex;
+        position: absolute;
+        width: 100px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        top: -83px;
+        left: -35px;
+        box-shadow: 0 0 8px #00000027;
+        border-radius: 5px;
+        transform: rotate(-90deg);
+      }
+
+      &:hover .volume-container {
+        // display: flex;
+        visibility: visible;
+        opacity: 1;
+        transition-delay: 0s;
+      }
+    }
+
+  }
+}
 </style>

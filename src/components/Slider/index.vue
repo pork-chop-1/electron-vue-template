@@ -1,10 +1,16 @@
 <template>
-  <div @mousedown="mousedown" class="slider-container" ref="container">
+  <div 
+    @mousedown="mousedown" 
+    class="slider-container" 
+    ref="container"
+  >
     <div class="slider-pointer">
       <div class="slider-button" :class="{dragging}"></div>
     </div>
-    <div class="background-load-bar"></div>
-    <div class="foreground-load-bar"></div>
+    <div class="bar-wrapper">
+      <div class="background-load-bar"></div>
+      <div class="foreground-load-bar"></div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -17,10 +23,11 @@ import { computed, reactive, ref, toRef, watch } from 'vue';
 const props = defineProps<{
   // mouseDown: (percentage: number) => void,
   // mouseMove: (percentage: number) => void,
-  mouseUp: (percentage: number) => void,
+  mouseUp?: (percentage: number) => void,
   width: number,
   height: number,
-  percentage: number
+  percentage: number,
+  orientation?: 'vertical' | 'horizontal'
 }>()
 
 const emits = defineEmits(['update:percentage'])
@@ -28,18 +35,17 @@ const percentage = toRef(props, 'percentage')
 const width = toRef(props, 'width')
 const height = toRef(props, 'height')
 const mouseUp = toRef(props, 'mouseUp')
+const orientation = toRef(props, 'orientation')
 
 const dragging = ref(false)
 
-const buttonRadius = 8
-
 const container = ref<HTMLElement>()
-const button = ref<HTMLElement>()
+  
 const barStyle = computed(() => {
   return {
     width: width.value + 'px',
     height: height.value + 'px',
-    borderRadius: height.value / 2 + 'px'
+    borderRadius: height.value / 2 + 'px',
   }
 })
 const buttonStyle = reactive({
@@ -66,25 +72,41 @@ const setPercentage = (per: number) => {
   buttonStyle.left = `${width.value / 100 * per}px`
 }
 
+const isHorizontal = orientation.value == null || orientation.value === 'horizontal'
+
 const mousedown = (e: MouseEvent) => {
   if (!container.value) {
     return
   }
-  let left = container.value.getBoundingClientRect().left
-  let loc = e.pageX - left
+  let left = 0
+  let loc = 0
+  // 水平朝向
+  if(isHorizontal) {
+    left = container.value.getBoundingClientRect().left
+    loc = e.pageX - left
+  } else {
+    // 竖直朝向
+    left = container.value.getBoundingClientRect().top
+    loc = width.value - (e.pageY - left)
+  }
   loc < 0 && (loc = 0)
   loc > width.value && (loc = width.value)
   setLoc(loc)
   dragging.value = true
   document.onmousemove = (moveEvent: MouseEvent) => {
-    let loc = moveEvent.pageX - left
+    let loc = 0
+    if(isHorizontal) { 
+      loc = moveEvent.pageX - left
+    } else {
+      loc = width.value - (moveEvent.pageY - left)
+    }
     loc < 0 && (loc = 0)
     loc > width.value && (loc = width.value)
     setLoc(loc)
   }
   document.onmouseup = (moveEvent: MouseEvent) => {
     dragging.value = false
-    mouseUp.value(percentage.value)
+    mouseUp.value && mouseUp.value(percentage.value)
     document.onmousemove = null
     document.onmouseup = null
   }
@@ -105,27 +127,23 @@ defineExpose({
   position: relative;
   width: v-bind('barStyle.width');
   height: v-bind('barStyle.height');
-  background-color: rgb(0, 255, 42);
-  border-radius: v-bind('barStyle.borderRadius');
   user-select: none;
+  padding: v-bind('barStyle.borderRadius') 0;
 
   .slider-pointer {
-    position: absolute;
-    // width: 16px;
-    // height: 16px;
-    // border-radius: 50%;
-    // background-color: rgb(0 135 172 / 20%);
+    position: relative;
     left: v-bind('buttonStyle.left');
-    // top: -5px;
+    width: 0;
+    height: 0;
 
     .slider-button {
-      position: relative;
+      position: absolute;
       width: 16px;
       height: 16px;
       border-radius: 50%;
       background-color: #fff;
-      transform: translateY(-25%);
-      left: -50%;
+      transform: translate(-50%, -50%);
+      // left: -50%;
       box-sizing: border-box;
       border: 1px solid var(--theme-bg);
       z-index: 2;
@@ -136,12 +154,24 @@ defineExpose({
     }
   }
 
+  .bar-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: rgb(0, 255, 42);
+    border-radius: v-bind('barStyle.borderRadius');
+    overflow: hidden;
+  }
+
   .foreground-load-bar {
-    position: relative;
+    position: absolute;
     width: v-bind('foregroundStyle.width');
     height: v-bind('barStyle.height');
+    left: 0;
+    top: 0;
     background-color: rgb(0, 160, 27);
-
   }
 }
 </style>
