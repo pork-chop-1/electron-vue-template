@@ -185,7 +185,7 @@ const volume = toRef(playStore, 'volume')
       }
     }
 
-    .info-wrapper {}
+    // .info-wrapper {}
   }
 
   .c {
@@ -269,7 +269,7 @@ const volume = toRef(playStore, 'volume')
         // display: none;
         visibility: hidden;
         opacity: 0;
-        transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+        transition: visibility 0s linear 0.3s, opacity 0.3s linear;
         display: flex;
         position: absolute;
         width: 100px;
