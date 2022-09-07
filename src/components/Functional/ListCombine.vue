@@ -1,6 +1,6 @@
 <template>
   <template v-for="item, index in props.list" :key="item.id">
-    <slot :id="item.id" :content="item.name">
+    <slot :id="item.id" :item="item">
       {{ item.name }}
     </slot>
     <!-- 分离字符最后一个不显示 -->
@@ -12,7 +12,8 @@
 export interface API {
   listType: {
     name: string,
-    id: string | number
+    id: string | number,
+    [otherKey: string]: any,
   }
 }
 const props = defineProps<{

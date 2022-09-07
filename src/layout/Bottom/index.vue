@@ -54,6 +54,7 @@
       </div>
     </div>
     <div class="r">
+      <!-- 音量控制 -->
       <div class="volume-control">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-soundsize"></use>
@@ -62,12 +63,28 @@
           <Slider v-model:percentage="volume" orientation="vertical" :width="70" :height="5" />
         </div>
       </div>
-      <div class="current-playlist">
+      <!-- 播放模式 -->
+      <div class="play-mode-control" @click="togglePlayMode">
+        <svg class="icon" aria-hidden="true" v-show="playMode==='cycle'">
+          <use xlink:href="#icon-list-circle"></use>
+        </svg>
+        <svg class="icon" aria-hidden="true" v-show="playMode==='single'">
+          <use xlink:href="#icon-singlecycle"></use>
+        </svg>
+        <svg class="icon" aria-hidden="true" v-show="playMode==='random'">
+          <use xlink:href="#icon-random"></use>
+        </svg>
+      </div>
+      <!-- 当前列表 -->
+      <div class="current-playlist" @click="toggleCurrentPlaylistVisible">
         <svg class="icon" aria-hidden="true">
           <use xlink:href="#icon-musiclist"></use>
         </svg>
       </div>
     </div>
+    <BDrawer v-model:visible="currentPlaylistVisible" :get-container="'#center'" >
+      <CurrentPlayList />
+    </BDrawer>
   </div>
 </template>
 <script lang="ts" setup>
@@ -77,6 +94,8 @@ import ListCombine, { API as ListAPI } from '@/components/Functional/ListCombine
 import { usePlay } from '@/store/play'
 import { convertTime } from '@/utils/NumberUtils'
 import Slider from '@/components/Slider/index.vue';
+import BDrawer from '@/components/BDrawer/index.vue'
+import CurrentPlayList from './CurrentPlayList/index.vue'
 
 const playStore = usePlay()
 // 处理详情开闭
@@ -127,6 +146,16 @@ const next = () => {
 
 // 音量相关
 const volume = toRef(playStore, 'volume')
+
+// 右边当前列表
+const currentPlaylistVisible = ref(false)
+const toggleCurrentPlaylistVisible = () => {
+  currentPlaylistVisible.value = !currentPlaylistVisible.value
+}
+
+// 播放模式相关
+const playMode = toRef(playStore, 'playMode')
+const togglePlayMode = toRef(playStore, 'togglePlayMode')
 </script>
 <style lang="scss" scoped>
 .bottom-wrapper {
@@ -240,7 +269,7 @@ const volume = toRef(playStore, 'volume')
 
   .r {
     display: flex;
-    .volume-control, .current-playlist {
+    .volume-control, .current-playlist, .play-mode-control {
       position: relative;
       margin-right: 10px;
       font-size: 20px;

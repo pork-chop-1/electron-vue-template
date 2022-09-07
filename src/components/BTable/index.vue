@@ -1,6 +1,6 @@
 <template>
   <table class="list-wrapper">
-    <thead class="header">
+    <thead class="header" v-if="!props.isHideHeader">
       <tr>
         <td class="header-item" v-if="rowSelection?.selectedRowKeys">
           <a-checkbox></a-checkbox>
@@ -41,24 +41,15 @@ import { computed, ComputedRef, onMounted, PropType, reactive, Ref, ref, toRef, 
 import useDragSelect from '@/hooks/useDragSelect'
 import { ColumnsType, DataSourceType } from '.';
 
-const props = defineProps({
-  columns: {
-    type: Array as PropType<ColumnsType[]>,
-    require: true,
+const props = defineProps<{
+  columns: ColumnsType[],
+  dataSource: DataSourceType[],
+  rowSelection?: {
+    selectedRowKeys: (string|number)[],
+    onChange: (arg1: (string|number)[]) => void
   },
-  dataSource: {
-    type: Array as PropType<DataSourceType[]>,
-    require: true,
-  },
-  /** 可选：列表多选 */
-  rowSelection: {
-    type: Object as PropType<{
-      selectedRowKeys: (string|number)[],
-      onChange: (arg1: (string|number)[]) => void
-    }>,
-    require: false,
-  },
-})
+  isHideHeader?: boolean
+}>()
 // const columns = reactive(props.columns as ColumnsType[])
 const columns = toRef(props, 'columns')
 // const dataSource = reactive(props.dataSource as DataSourceType[])

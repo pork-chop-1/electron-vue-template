@@ -3,9 +3,9 @@
     <div class="title-wrapper">
       <div class="title">{{  songInfo?.name  }}</div>
       <div class="info-wrapper">
-        <ListCombine :list="songArtists" v-slot="{ content, id }">
+        <ListCombine :list="songArtists" v-slot="{ item, id }">
           <router-link :to="`/artistDetail/${id}`">
-            {{  content  }}
+            {{  item.name  }}
           </router-link>
         </ListCombine>
         <span> - </span>

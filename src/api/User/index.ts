@@ -1,4 +1,5 @@
 import { request, Response } from '@/utils/request'
+import { SongType } from '../Song'
 
 export type AccountType = {
   code: number,
@@ -40,6 +41,25 @@ export function getUserDetail(uid: number) {
     method: 'GET',
     params: {
       uid
+    }
+  })
+}
+
+export type RecentSongType = {
+  list: {
+    data: SongType,
+    playTime: number,
+    resourceType: string,
+  }[]
+  total: number,
+}
+
+export function getRecentSong(limit: number = 100) {
+  return request<Response<RecentSongType>>({
+    url: '/record/recent/song',
+    method: 'GET',
+    params: {
+      limit
     }
   })
 }
