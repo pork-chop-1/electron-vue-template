@@ -3,11 +3,13 @@
     <div class="menu-header">我的音乐</div>
     <div class="menu-item" v-for="item in staticRoutes" :key="item.name" @click="clickHandler(item.path)">{{item.meta?.description}}</div>
     <!-- <div class="menu-item">私人FM</div> -->
+    <PlaylistDropdownVue />
   </div>
 </template>
 <script lang="ts" setup>
 import {staticRoutes} from '@/router/staticPage'
 import {useRouter} from 'vue-router'
+import PlaylistDropdownVue from './PlaylistDropdown.vue';
 // const topMenu = {}
 // 绑定左侧菜单的点击跳转
 const router = useRouter()

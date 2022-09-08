@@ -9,20 +9,16 @@
             <use xlink:href="#icon-arrow-top-copy"></use>
           </svg>
         </div>
-        <div class="info-wrapper">
-          <div class="title">
-            {{  currentSongInfo?.name  }}
-          </div>
-          <div class="artists">
-            <ListCombine :list="artistList" #="{ id }">
-              <router-link :to="`/artistDetail/${id}`"></router-link>
-            </ListCombine>
-          </div>
-        </div>
       </div>
       <div class="info-wrapper">
-        <div class="title"></div>
-        <div class="author"></div>
+        <div class="title">
+          {{  currentSongInfo?.name  }}
+        </div>
+        <div class="artists">
+          <ListCombine :list="artistList" #="{ id, item }">
+            <router-link :to="`/artistDetail/${id}`">{{item.name}}</router-link>
+          </ListCombine>
+        </div>
       </div>
     </div>
     <div class="c">
@@ -48,8 +44,13 @@
       </div>
       <div class="slider-wrapper">
         <div class="current-time">{{  currentTimeFormat  }}</div>
-        <BPlayer v-model:currentTime="currentTime" v-model:endTime="endTime" :url="currentSongUrl" :playing="playing"
-          :volume="volume / 100" />
+        <BPlayer 
+          v-model:currentTime="currentTime" 
+          v-model:endTime="endTime" 
+          :url="currentSongUrl" 
+          :playing="playing"
+          :volume="volume / 100"
+          :ended="ended" />
         <div class="end-time">{{  endTimeFormat  }}</div>
       </div>
     </div>
@@ -147,6 +148,11 @@ const next = () => {
 // 音量相关
 const volume = toRef(playStore, 'volume')
 
+// 播放完成
+const ended = () => {
+  playStore.playCompleted()
+}
+
 // 右边当前列表
 const currentPlaylistVisible = ref(false)
 const toggleCurrentPlaylistVisible = () => {
@@ -184,6 +190,7 @@ const togglePlayMode = toRef(playStore, 'togglePlayMode')
       border-radius: 5px;
       overflow: hidden;
       flex-shrink: 0;
+      display: flex;
 
       .song-cover {
         width: 100%;
@@ -214,12 +221,29 @@ const togglePlayMode = toRef(playStore, 'togglePlayMode')
       }
     }
 
-    // .info-wrapper {}
+    .info-wrapper {
+      margin: 0 0 0 10px;
+      width: 200px;
+      height: 50px;
+
+      .title {
+        font-size: 20px;
+        overflow: hidden;
+      }
+
+      .artists {
+        overflow: hidden;
+        &>a {
+          color: #fff
+        }
+      }
+    }
   }
 
   .c {
     max-width: 500px;
     height: 100%;
+    margin-left: auto;
 
     .control-wrapper {
       display: flex;
@@ -269,6 +293,7 @@ const togglePlayMode = toRef(playStore, 'togglePlayMode')
 
   .r {
     display: flex;
+    margin-left: auto;
     .volume-control, .current-playlist, .play-mode-control {
       position: relative;
       margin-right: 10px;

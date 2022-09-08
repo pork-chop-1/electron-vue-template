@@ -1,5 +1,6 @@
 import { request, Response } from '@/utils/request'
 import { SongType } from '../Song'
+import { AccountType } from '../User'
 
 export type PlaylistType = {
   coverImgId: number,
@@ -55,6 +56,52 @@ export type PlaylistDetailType = {
   privileges: []
 } & PlaylistType
 
+export type UserPlaylistsType = {
+  subscribers: [],
+  subscribed: boolean,
+  creator: AccountType,
+  artists: null,
+  tracks: null,
+  updateFrequency: null,
+  backgroundCoverId: 0,
+  backgroundCoverUrl: string | null,
+  titleImage: 0,
+  titleImageUrl: string | null,
+  englishTitle: null,
+  opRecommend: boolean,
+  recommendInfo: string | null,
+  subscribedCount: number,
+  cloudTrackCount: number,
+  userId: number,
+  totalDuration: number,
+  coverImgId: number,
+  privacy: number,
+  trackUpdateTime: number,
+  trackCount: number,
+  updateTime: number,
+  commentThreadId: string,
+  coverImgUrl: string,
+  specialType: number,
+  anonimous: boolean,
+  createTime: number,
+  highQuality: boolean,
+  newImported: boolean,
+  trackNumberUpdateTime: number,
+  playCount: number,
+  adType: number,
+  description: null,
+  tags: [],
+  ordered: boolean,
+  status: 0,
+  name: string,
+  id: number,
+  coverImgId_str: string,
+  sharedUsers: null,
+  shareStatus: null,
+  copied: boolean
+}
+
+
 export const Playlist = {
   related: (limit: number) => {
     return request({
@@ -92,6 +139,20 @@ export const Playlist = {
       method: 'GET',
       params: {
         id
+      }
+    })
+  },
+  getUserPlaylist: (uid: number, limit?: number, offset?: number) => {
+    return request<{
+      code: number,
+      playlist: UserPlaylistsType[]
+    }>({
+      url: '/user/playlist',
+      method: 'GET',
+      params: {
+        uid,
+        limit,
+        offset
       }
     })
   },

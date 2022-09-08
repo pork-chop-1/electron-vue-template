@@ -1,28 +1,24 @@
 <template>
   <div class="player-container">
-    
+
     <!-- 仅仅包含最简单的进度条 -->
     <div class="slider-container">
-      <Slider 
-        ref="slider"
-        v-model:percentage="percentage" 
-        :width="300" 
-        :height="5"
-        :mouseUp="mouseUp" />
+      <Slider ref="slider" v-model:percentage="percentage" :width="300" :height="5" :mouseUp="mouseUp" />
     </div>
     <!-- 使用html audio作为播放器，但是不显示控件 -->
     <audio 
       :src="url" 
       class="inner-audio" 
-      ref="audio"
-      @loadedmetadata="loadedmetadata"
+      ref="audio" 
+      @loadedmetadata="loadedmetadata" 
       @timeupdate="timeupdate"
-      @ended="">
+      @canplay="canplay"
+      @ended="ended">
     </audio>
   </div>
 </template>
 <script lang="ts" setup>
-import Slider, {API as SliderAPI} from '@/components/Slider/index.vue'
+import Slider, { API as SliderAPI } from '@/components/Slider/index.vue'
 import { computed, onMounted, reactive, ref, toRef, toRefs, watch } from 'vue';
 
 const props = defineProps<{
@@ -30,10 +26,11 @@ const props = defineProps<{
   endTime: number,
   currentTime: number,
   playing: boolean,
-  volume?: number
+  volume: number,
+  ended?: () => void
 }>()
 
-const {url, currentTime, playing, endTime, volume} = toRefs(props)
+const { url, currentTime, playing, endTime, volume } = toRefs(props)
 
 // 使用v-model暴露当前时间和长度的改变方式
 const emits = defineEmits(['update:currentTime', 'update:endTime'])
@@ -44,30 +41,41 @@ const slider = ref<SliderAPI | null>(null)
 const isDragging = computed(() => slider.value?.dragging)
 
 // 进度条百分比，可直接改变
-const percentage = ref(0)
-watch(percentage, (v) => {
-  emits('update:currentTime', v / 100 * endTime.value)
-})
-
-const audio = ref<HTMLMediaElement | null>(null)
-onMounted(() => {
-  if(audio.value) {
-    audio.value.addEventListener('canplay', (event) => {
-      // console.log('Video can start, but not sure it will play through.');
-    });
+const percentage = computed({
+  get: () => {
+    return currentTime.value * 100 / endTime.value
+  }, 
+  set: (newVal: number) => {
+    emits('update:currentTime', newVal / 100 * endTime.value)
   }
 })
+// watch(percentage, (v) => {
+//   emits('update:currentTime', v / 100 * endTime.value)
+// })
+
+
+const audio = ref<HTMLMediaElement | null>(null)
 
 // 音乐基础信息已获得，获取时长
 const loadedmetadata = () => {
   emits('update:endTime', audio.value?.duration)
 }
 
+const canplay = () => {
+  if(audio.value) {
+    audio.value.volume = volume.value
+  }
+  // 切换源后，play为true将自动播放
+  if (playing.value) {
+    audio.value?.play()
+  }
+}
+
 const timeupdate = () => {
-  if(isDragging.value) {
+  if (isDragging.value) {
   } else {
     // emits('update:currentTime', audio.value?.currentTime)
-    if(endTime.value !== 0 && audio.value) {
+    if (endTime.value !== 0 && audio.value) {
       percentage.value = audio.value?.currentTime / endTime.value * 100
     }
   }
@@ -75,8 +83,8 @@ const timeupdate = () => {
 
 // 监听是否停止
 watch(playing, (v) => {
-  if(audio.value) {
-    if(v) {
+  if (audio.value) {
+    if (v) {
       audio.value.play()
     } else {
       audio.value.pause()
@@ -87,15 +95,24 @@ watch(playing, (v) => {
 // 监听拖动
 const mouseUp = (newPer: number) => {
   percentage.value = newPer
-  if(endTime.value !== 0) {
+  if (endTime.value !== 0) {
     audio.value && (audio.value.currentTime = newPer / 100 * endTime.value)
   }
 }
 
-if(volume != null && volume.value != null) {
+if (volume != null && volume.value != null) {
   watch(volume, (v) => {
     audio.value && (audio.value.volume = v as number)
   })
+}
+
+// 播放结束后的行为
+const ended = () => {
+  props.ended && props.ended()
+  if(playing.value) {
+    percentage.value = 0
+    audio.value?.play()
+  }
 }
 </script>
 <style lang="scss">

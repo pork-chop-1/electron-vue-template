@@ -48,7 +48,11 @@ export const usePlay = defineStore('play', {
   getters: {
     songInfo(state) {
       if(state.currentSongIndex !== -1) {
-        return state.songList[state.currentSongIndex]
+        if(this.playMode === 'random') {
+          return state.songList[state.randomIndex[state.currentSongIndex]]
+        } else {
+          return state.songList[state.currentSongIndex]
+        }
       } else {
         return null
       }
@@ -102,23 +106,16 @@ export const usePlay = defineStore('play', {
      * 切换下一曲
      */
     nextSong() {
-      if(this.playMode === 'cycle' || this.playMode === 'single') {
-        this.currentSongIndex = (this.currentSongIndex + 1) % this.songList.length
-      } else {
-        const tempIndex = (this.currentSongIndex + 1 + this.songList.length) % this.songList.length
-        this.currentSongIndex = this.randomIndex[tempIndex]
-      }
+      this.currentSongIndex = (this.currentSongIndex + 1) % this.songList.length
+      this.playing = true
     },
     /**
      * 切上一曲
      */
     prevSong() {
-      if(this.playMode === 'cycle' || this.playMode === 'single') {
-        this.currentSongIndex = (this.currentSongIndex - 1 + this.songList.length) % this.songList.length
-      } else {
-        const tempIndex = (this.currentSongIndex - 1 + this.songList.length) % this.songList.length
-        this.currentSongIndex = this.randomIndex[tempIndex]
-      }
+      this.currentSongIndex = (this.currentSongIndex - 1 + this.songList.length) % this.songList.length
+
+      this.playing = true
     },
     /**
      * 播放完成后的行为

@@ -3,6 +3,7 @@ import Discover from '@/views/Discover/index.vue'
 import PrivateFM from '@/views/PrivateFM/index.vue'
 import MyLikeList from '@/views/MyLikeList/index.vue'
 import RecentPlay from '@/views/RecentPlay/index.vue'
+import MyCollection from '@/views/MyCollection/index.vue'
 
 export const staticRoutes: Array<RouteRecordRaw> = [
   {
@@ -35,6 +36,14 @@ export const staticRoutes: Array<RouteRecordRaw> = [
     component: RecentPlay,
     meta: {
       description: '最近播放'
+    }
+  },
+  {
+    path: '/MyCollection',
+    name: 'MyCollection',
+    component: MyCollection,
+    meta: {
+      description: '我的收藏'
     }
   },
 ];

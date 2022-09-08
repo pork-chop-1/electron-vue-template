@@ -65,7 +65,7 @@ onMounted(async () => {
     data.value = res.data.list.map((v) => {
       return {
         key: v.data.id,
-        playTime: v.playTime,
+        playTime: convertPlayTime(v.playTime),
         title: v.data.name,
         artists: v.data.ar
       }
@@ -75,6 +75,16 @@ onMounted(async () => {
 
 const convertPlayTime = (timestamp: number) => {
   const now = Date.now()
+  const gap = now - timestamp
+  if(gap < 1000 * 60 * 60) {
+    return `${Math.round(gap / 1000 / 60)}分钟前`
+  } else if (gap < 1000 * 60 * 60 * 24) {
+    return `${Math.round(gap / 1000 / 60 / 60)}小时前`
+  } else if (gap < 1000 * 60 * 60 * 24 * 2) {
+    return `昨天`
+  } else {
+    return `${new Date(timestamp).toLocaleDateString()}`
+  }
 
 }
 </script>

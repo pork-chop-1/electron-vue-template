@@ -2,19 +2,19 @@ import { request, Response } from '@/utils/request'
 import { SongType } from '../Song'
 
 export type AccountType = {
-  code: number,
-  profile: {
-    avatarUrl: string,
-    backgroundUrl: string,
-    birthday: number,
-    createTime: number,
-    nickname: string,
-    userId: number,
-  } | null
+  avatarUrl: string,
+  backgroundUrl: string,
+  birthday: number,
+  createTime: number,
+  nickname: string,
+  userId: number,
 }
 
 export function getAccount() {
-  return request<AccountType>({
+  return request<{
+    code: number,
+    profile: AccountType | null
+  }>({
     url: '/user/account',
     method: 'GET',
     params: {
