@@ -20,6 +20,7 @@
       <tr v-for="dataItem in dataSource" 
         :key="dataItem.key" 
         :class="{ 'body-item-group': true }" 
+        ref="rowRefs"
         @click="listSelect(dataItem.id)">
         <td class="body-item" v-if="rowSelection?.selectedRowKeys">
           <a-checkbox v-model:checked="checkList[dataItem.key as keyof typeof checkList]"></a-checkbox>
@@ -37,6 +38,10 @@
   </table>
 </template>
 <script lang="ts" setup>
+export interface API {
+  rowRefs: HTMLElement[]
+}
+
 import { computed, ComputedRef, onMounted, PropType, reactive, Ref, ref, toRef, watch } from 'vue'
 import useDragSelect from '@/hooks/useDragSelect'
 import { ColumnsType, DataSourceType } from '.';
@@ -119,6 +124,13 @@ onMounted(() => {
       console.log(holding, locInfo)
     })
   }
+})
+
+// 暴露出tbody中每行的引用
+const rowRefs = ref<HTMLElement[]>()
+
+defineExpose({
+  rowRefs
 })
 </script>
 <style lang="scss">

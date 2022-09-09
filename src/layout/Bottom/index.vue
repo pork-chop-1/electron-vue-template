@@ -182,6 +182,8 @@ const togglePlayMode = toRef(playStore, 'togglePlayMode')
     width: 280px;
     height: 100%;
     padding: 10px;
+    margin-right: auto;
+    flex: 1;
 
     .cover-wrapper {
       position: relative;
@@ -243,7 +245,7 @@ const togglePlayMode = toRef(playStore, 'togglePlayMode')
   .c {
     max-width: 500px;
     height: 100%;
-    margin-left: auto;
+    flex: 1;
 
     .control-wrapper {
       display: flex;
@@ -294,6 +296,7 @@ const togglePlayMode = toRef(playStore, 'togglePlayMode')
   .r {
     display: flex;
     margin-left: auto;
+    flex: 1;
     .volume-control, .current-playlist, .play-mode-control {
       position: relative;
       margin-right: 10px;

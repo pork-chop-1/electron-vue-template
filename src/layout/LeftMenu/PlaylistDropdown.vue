@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="own-container">
     <div class="title" @click="ownPlayListsOpened = !ownPlayListsOpened">
       创建的列表
     </div>
@@ -7,6 +7,22 @@
       <li 
         class="list-item" 
         v-for="item in ownPlayLists" 
+        :key="item.id"
+        :title="item.name"
+        @click="directPlaylist(item.id)"
+      >
+        {{item.name}}
+      </li>
+    </ul>
+  </div>
+  <div class="subs-container">
+    <div class="title" @click="subsPlayListsOpened = !subsPlayListsOpened">
+      创建的列表
+    </div>
+    <ul class="list-wrapper" :class="{opened: subsPlayListsOpened}">
+      <li 
+        class="list-item" 
+        v-for="item in subsPlayLists" 
         :key="item.id"
         @click="directPlaylist(item.id)"
       >
@@ -63,30 +79,43 @@ const directPlaylist = (id: number) => {
 }
 </script>
 <style lang="scss" scoped>
-  .title {
+.title {
+  box-sizing: border-box;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 15px 0 0 20px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.list-wrapper {
+  width: 100%;
+  overflow: hidden;
+  transition: .3s;
+  max-height: 0;
+  
+  &.opened {
+    max-height: 1000px;
+  }
+
+  .list-item {
     width: 100%;
     height: 40px;
-    padding: 0 0 0 10px;
-    font-size: 16px;
-  }
-
-  .list-wrapper {
-    width: 100%;
+    font-size: 18px;
+    padding: 0 0 0 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     overflow: hidden;
-    height: 0;
-    transition: .3s height;
 
-    &.opened {
-      height: 900px;
-    }
-
-    .list-item {
-      width: 100%;
-      height: 40px;
-      font-size: 18px;
-      padding: 0 0 0 12px;
-      cursor: pointer;
-
+    &:hover {
+      background: var(--hover-bg)
     }
   }
+}
 </style>
