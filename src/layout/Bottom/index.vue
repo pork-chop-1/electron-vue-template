@@ -83,9 +83,7 @@
         </svg>
       </div>
     </div>
-    <BDrawer v-model:visible="currentPlaylistVisible" :get-container="'#center'" >
-      <CurrentPlayList />
-    </BDrawer>
+    <CurrentPlayList v-model:visible="currentPlaylistVisible"/>
   </div>
 </template>
 <script lang="ts" setup>
@@ -95,7 +93,6 @@ import ListCombine, { API as ListAPI } from '@/components/Functional/ListCombine
 import { usePlay } from '@/store/play'
 import { convertTime } from '@/utils/NumberUtils'
 import Slider from '@/components/Slider/index.vue';
-import BDrawer from '@/components/BDrawer/index.vue'
 import CurrentPlayList from './CurrentPlayList/index.vue'
 
 const playStore = usePlay()
