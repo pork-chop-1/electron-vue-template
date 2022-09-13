@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import SongList from '@/components/SongList/index.vue'
 import { Playlist, PlaylistDetailType } from '@/api/Playlist'
-import { onBeforeUpdate, onMounted, ref } from 'vue';
+import { onBeforeUpdate, onMounted, ref, toRef, watch } from 'vue';
 import { useRoute } from 'vue-router'
 import { Song, SongType } from '@/api/Song';
 
@@ -29,7 +29,8 @@ const route = useRoute()
 
 const songList = ref<SongType[]>([])
 const playlistDetail = ref<PlaylistDetailType>()
-onMounted(async () => {
+
+const updateData = async () => {
   // https://neteasecloudmusicapi-docs.4everland.app/#/?id=%e8%8e%b7%e5%8f%96%e6%ad%8c%e5%8d%95%e8%af%a6%e6%83%85
   const id = parseInt(route.params.id as string, 10)
   const some = await Playlist.playListDetail(id)
@@ -42,10 +43,12 @@ onMounted(async () => {
     songList.value = songDetails.songs
 
   }
-})
+}
+onMounted(updateData)
 
-onBeforeUpdate(() => {
-
+const params = toRef(route, 'params')
+watch(params, (v) => {
+  updateData()
 })
 </script>
 <style lang="scss" scoped>

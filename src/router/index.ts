@@ -43,6 +43,14 @@ export const routes: Array<RouteRecordRaw> = [
       description: '专辑详情'
     }
   },
+  {
+    path: '/searchRes/:id',
+    name: 'searchRes',
+    component: () => import('@/views/SearchRes/index.vue'),
+    meta: {
+      description: '搜索结果'
+    }
+  },
 ];
 routes.push(
   ...staticRoutes

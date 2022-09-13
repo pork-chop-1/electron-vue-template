@@ -7,12 +7,9 @@
 import { ref, toRef, watch } from 'vue';
 import { onClickOutside } from '@vueuse/core'
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    require: true
-  }
-})
+const props = defineProps<{
+  visible: boolean
+}>()
 const emits = defineEmits(['update:visible'])
 
 const container = ref<HTMLElement>()
@@ -50,5 +47,9 @@ onClickOutside(container, (event) => {
 // }
 // document.addEventListener('click', closeHandler)
 </script>
-<style>
+<style scoped lang="scss">
+  .drop-down-container {
+    overflow: auto;
+    background-color: var(--plain-bg);
+  }
 </style>

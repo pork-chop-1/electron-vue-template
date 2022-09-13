@@ -88,7 +88,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, ref, toRef, watch } from 'vue';
-import BPlayer from '@/components/BPlayer/index.vue'
+import {default as BPlayer} from '@/components/BPlayer/index.vue'
 import ListCombine, { API as ListAPI } from '@/components/Functional/ListCombine.vue';
 import { usePlay } from '@/store/play'
 import { convertTime } from '@/utils/NumberUtils'

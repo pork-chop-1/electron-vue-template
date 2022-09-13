@@ -3,7 +3,14 @@
 
     <!-- 仅仅包含最简单的进度条 -->
     <div class="slider-container">
-      <Slider ref="slider" v-model:percentage="percentage" :width="300" :height="5" :mouseUp="mouseUp" />
+      <Slider 
+        ref="slider" 
+        v-model:percentage="percentage" 
+        :backgroundPercentage="bgPercentage"
+        :width="300" 
+        :height="5" 
+        :mouseUp="mouseUp" 
+      />
     </div>
     <!-- 使用html audio作为播放器，但是不显示控件 -->
     <audio 
@@ -19,7 +26,7 @@
 </template>
 <script lang="ts" setup>
 import Slider, { API as SliderAPI } from '@/components/Slider/index.vue'
-import { computed, onMounted, reactive, ref, toRef, toRefs, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref, toRef, toRefs, watch } from 'vue';
 
 const props = defineProps<{
   url: string,
@@ -45,8 +52,11 @@ const percentage = computed({
   get: () => {
     return currentTime.value * 100 / endTime.value
   }, 
-  set: (newVal: number) => {
-    emits('update:currentTime', newVal / 100 * endTime.value)
+  set: async (newVal: number) => {
+    const newTime = newVal / 100 * endTime.value
+    if(newTime !== currentTime.value) {
+      emits('update:currentTime', newVal / 100 * endTime.value)
+    }
   }
 })
 // watch(percentage, (v) => {
@@ -114,6 +124,22 @@ const ended = () => {
     audio.value?.play()
   }
 }
+
+// 已准备好的播放部分
+const bgPercentage = ref(0)
+
+const handler = setInterval(() => {
+  if(audio.value) {
+    const buffered = audio.value.buffered
+    // console.log(buffered)
+    if(buffered.length > 0) {
+      bgPercentage.value = buffered.end(buffered.length - 1) / endTime.value * 100
+    }
+  }
+}, 500)
+onBeforeUnmount(() => {
+  clearInterval(handler)
+})
 </script>
 <style lang="scss">
 .player-container {

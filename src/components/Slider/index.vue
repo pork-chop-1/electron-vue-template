@@ -8,8 +8,8 @@
       <div class="slider-button" :class="{dragging}"></div>
     </div>
     <div class="bar-wrapper">
-      <div class="background-load-bar"></div>
       <div class="foreground-load-bar"></div>
+      <div class="background-load-bar"></div>
     </div>
   </div>
 </template>
@@ -19,6 +19,7 @@ export interface API {
 }
 
 import { computed, reactive, ref, toRef, watch } from 'vue';
+import {throttle} from 'lodash-es'
 
 const props = defineProps<{
   // mouseDown: (percentage: number) => void,
@@ -27,6 +28,7 @@ const props = defineProps<{
   width: number,
   height: number,
   percentage: number,
+  backgroundPercentage?: number,
   orientation?: 'vertical' | 'horizontal'
 }>()
 
@@ -36,6 +38,7 @@ const width = toRef(props, 'width')
 const height = toRef(props, 'height')
 const mouseUp = toRef(props, 'mouseUp')
 const orientation = toRef(props, 'orientation')
+const backgroundPercentage = toRef(props, 'backgroundPercentage')
 
 const dragging = ref(false)
 
@@ -54,14 +57,21 @@ const buttonStyle = reactive({
 const foregroundStyle = reactive({
   width: '0px'
 })
+const backgroundStyle = reactive({
+  width: backgroundPercentage.value ? backgroundPercentage.value * width.value / 100 + 'px' : '0'
+})
 
 /**
  * 根据位置设置percentage
+ * 直接调用emits将会造成卡顿，所以节流
  */
+const updatePercentage = throttle((left: number) => {
+    emits('update:percentage', Math.floor((left) / width.value * 10000) / 100)
+  }, 100, { 'trailing': false })
 const setLoc = (left: number) => {
   foregroundStyle.width = `${left}px`
   buttonStyle.left = `${left}px`
-  emits('update:percentage', Math.floor((left) / width.value * 10000) / 100)
+  updatePercentage(left)
 }
 
 /**
@@ -172,6 +182,15 @@ defineExpose({
     left: 0;
     top: 0;
     background-color: rgb(0, 160, 27);
+  }
+
+  .background-load-bar {
+    position: absolute;
+    width: v-bind('backgroundStyle.width');
+    height: v-bind('barStyle.height');
+    left: 0;
+    top: 0;
+    background-color: rgb(63, 98, 213);
   }
 }
 </style>

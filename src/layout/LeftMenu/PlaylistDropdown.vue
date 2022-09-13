@@ -17,7 +17,7 @@
   </div>
   <div class="subs-container">
     <div class="title" @click="subsPlayListsOpened = !subsPlayListsOpened">
-      创建的列表
+      收藏的列表
     </div>
     <ul class="list-wrapper" :class="{opened: subsPlayListsOpened}">
       <li 
@@ -75,7 +75,7 @@ onMounted(async () => {
 // 跳转
 const router = useRouter()
 const directPlaylist = (id: number) => {
-  router.push(`/playlistDetail/${id}`)
+  router.push(`/playList/${id}`)
 }
 </script>
 <style lang="scss" scoped>
