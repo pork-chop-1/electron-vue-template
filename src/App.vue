@@ -2,9 +2,11 @@
   <div id="app-container">
     <Header />
     <div id="center">
-      <LeftMenu />
-      <div id="divide-line"></div>
-      <router-view id="router"></router-view>
+      <div id="center-content">
+        <LeftMenu />
+        <div id="divide-line"></div>
+        <router-view id="router"></router-view>
+      </div>
       <!-- 从底部弹出songDetail -->
       <SongDetail id="song-detail" :class="{opened}"/>
     </div>
@@ -35,18 +37,23 @@ const opened = toRef(playStore, 'songPlaneOpened')
 }
 #center {
   height: calc(100vh - 110px);
-  position: relative;
-  display: flex;
   overflow: hidden;
-  #router{
-    display: inline-block;
-    width: calc(100% - 200px);
-    overflow: hidden auto;
-  }
-  #divide-line {
-    width: 2px;
-    background-color: var(--divide-line-fg);
+  position: relative;
+  #center-content {
+    width: 100%;
     height: 100%;
+    display: flex;
+    position: relative;
+    #router{
+      display: inline-block;
+      width: calc(100% - 200px);
+      overflow: hidden auto;
+    }
+    #divide-line {
+      width: 2px;
+      background-color: var(--divide-line-fg);
+      height: 100%;
+    }
   }
 
   #song-detail {

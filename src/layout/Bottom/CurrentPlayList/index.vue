@@ -5,7 +5,7 @@
     <div class="info-wrapper">
       共{{ songList.length }}首
     </div>
-    <div class="playlist-wrapper">
+    <div class="playlist-wrapper" ref="scrollContainer">
       <BTable :is-hide-header="true" :columns="columns" :data-source="data" ref="recentTable">
         <template #bodyCell="{column, record}">
           <!-- 处理列表中的歌曲名称 -->
@@ -69,7 +69,7 @@ const currentIndex = toRef(playStore, 'currentSongIndex')
 const currentSong = toRef(playStore, 'songInfo')
 
 const recentTable = ref<typeof BTable | null>(null)
-
+const scrollContainer = ref<HTMLElement | null>(null)
 
 watch(currentSong, (v) => {
   // const rowRefs: BTableAPI['rowRefs'] = BTable.rowRefs
@@ -80,10 +80,16 @@ watch(currentSong, (v) => {
 watch(currentIndex, (v) => {
   if(recentTable.value && recentTable.value.rowRefs) {
     const ele: HTMLElement = recentTable.value.rowRefs[v]
-    ele.scrollIntoView({
+    scrollContainer.value?.scroll({
+      top: ele.offsetTop - scrollContainer.value.offsetHeight / 2,
       behavior: 'smooth',
-      block: 'center'
     })
+    // 使用scrollIntoView将会直接改变所有可能的外层滚动，即使它是hidden，不要用它
+    // https://stackoverflow.com/questions/11039885/scrollintoview-causing-the-whole-page-to-move
+    // ele.scrollIntoView({
+    //   behavior: 'smooth',
+    //   block: 'nearest'
+    // })
   }
 })
 
@@ -92,9 +98,14 @@ watch(currentPlaylistVisible, (v) => {
   if(v && recentTable.value && recentTable.value.rowRefs) {
     const ele: HTMLElement = recentTable.value.rowRefs[currentIndex.value]
     window.setTimeout(() => {
-      ele.scrollIntoView({
+
+      // ele.scrollIntoView({
+      //   behavior: 'smooth',
+      //   block: 'nearest'
+      // })
+      scrollContainer.value?.scroll({
+        top: ele.offsetTop - scrollContainer.value.offsetHeight / 2,
         behavior: 'smooth',
-        block: 'center'
       })
     } , 200) // 由于动画的原因，延迟了200ms
   }
