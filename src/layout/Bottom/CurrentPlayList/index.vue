@@ -137,7 +137,6 @@ const data = computed<DataSourceType[]>(() => {
 })
 
 const toggleSong = (id: number) => {
-  console.log(id)
   playStore.setSongId(id)
   playStore.setPlaneStatus(true)
 }

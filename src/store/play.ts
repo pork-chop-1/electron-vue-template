@@ -142,6 +142,9 @@ export const usePlay = defineStore('play', {
         this.randomIndex = generateShuffledArray(0, this.songList.length)
       }
     },
+    insertSong() {
+      
+    }
   },
   persist: true
 });

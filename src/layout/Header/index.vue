@@ -36,7 +36,9 @@
 
       <!-- 右上角的关键系统按钮 -->
       <button @click="minimize" id="minimize">
-        <minus-outlined />
+        <svg class="icon key-button" aria-hidden="true">
+          <use xlink:href="#icon-Minimize"></use>
+        </svg>
       </button>
       <button @click="maximize" id="maximize">
         <svg class="icon key-button" aria-hidden="true" v-show="!isMaximized">
@@ -49,7 +51,9 @@
         <fullscreen-exit-outlined v-show="isMaximized" /> -->
       </button>
       <button @click="close" id="close">
-        <close-outlined />
+        <svg class="icon key-button" aria-hidden="true">
+          <use xlink:href="#icon-close"></use>
+        </svg>
       </button>
     </div>
   </div>
@@ -57,10 +61,6 @@
 <script lang="ts" setup>
 import { ref, toRef } from 'vue'
 import {useRouter} from 'vue-router'
-import {
-  CloseOutlined,
-  MinusOutlined
-} from '@ant-design/icons-vue';
 import TopProfile from './TopProfile.vue';
 import TopSearch from './TopSearch.vue';
 

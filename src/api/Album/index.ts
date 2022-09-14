@@ -10,13 +10,13 @@ export type CollectionAlbumsType = {
   picId: number,
   picUrl: string,
   name: string,
-  id: 2075200,
-  size: 21,
+  id: number,
+  size: number,
   transNames: string[];
 }
 /**
  * 获取收藏列表
- * 
+ *
  */
 export function getCollectedAlbums(limit: number = 25, offset: number = 0) {
   return request<{
