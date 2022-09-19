@@ -44,7 +44,7 @@ export const routes: Array<RouteRecordRaw> = [
     }
   },
   {
-    path: '/searchRes/:id',
+    path: '/searchRes/:keyword',
     name: 'searchRes',
     component: () => import('@/views/SearchRes/index.vue'),
     meta: {

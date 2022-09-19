@@ -6,7 +6,7 @@ export type PlaylistType = {
   coverImgId: number,
   coverImgUrl: string,
   description: string,
-  id: string,
+  id: number,
   name: string,
   playCount: number,
   privacy: number,

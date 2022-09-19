@@ -24,7 +24,7 @@
             <div class="title">
               单曲
             </div>
-            <div class="list" v-for="item in suggestions?.songs" @click="">
+            <div class="list" v-for="item in suggestions?.songs" @click="suggestionSongClick(item)">
               {{item.name}}
             </div>
           </div>
@@ -32,7 +32,7 @@
             <div class="title">
               专辑
             </div>
-            <div class="list" v-for="item in suggestions?.albums">
+            <div class="list" v-for="item in suggestions?.albums" @click="suggestionClick(item.id, 'albums')">
               {{item.name}}
             </div>
           </div>
@@ -40,7 +40,7 @@
             <div class="title">
               歌手
             </div>
-            <div class="list" v-for="item in suggestions?.artists">
+            <div class="list" v-for="item in suggestions?.artists" @click="suggestionClick(item.id, 'artists')">
               {{item.name}}
             </div>
           </div>
@@ -48,7 +48,7 @@
             <div class="title">
               歌手
             </div>
-            <div class="list" v-for="item in suggestions?.playlists">
+            <div class="list" v-for="item in suggestions?.playlists" @click="suggestionClick(item.id, 'playlists')">
               {{item.name}}
             </div>
           </div>
@@ -65,6 +65,7 @@ import DropDown from '@/components/DropDown/DropDown.vue';
 import DeletableItem from './components/DeletableItem.vue';
 import { getDefaultSearch, getSearchSuggest, SearchSuggestionType } from '@/api/Search';
 import usePlay from '@/store/play';
+import { SongType } from '@/api/Song';
 
 // 搜索关键词
 const key = ref('')
@@ -87,11 +88,12 @@ const suggestionClick = (id: number, type: keyof SearchSuggestionType) => {
     router.push(`/artistDetail/${id}`)
   } else if(type === 'playlists') {
     router.push(`/playList/${id}`)
-  } else if(type === 'songs') {
-    // playStore.
-    // playStore.setSongId(id)
-    
   }
+  visible.value = false
+}
+const suggestionSongClick = (song: SongType) => {
+  playStore.insertSong(song)
+  visible.value = false
 }
 
 // 搜索回调

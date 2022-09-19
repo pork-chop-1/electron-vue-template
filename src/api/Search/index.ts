@@ -39,12 +39,13 @@ export function getSearchSuggest(keywords: string) {
 /**
  * 搜索多重匹配
  */
-export function getSearchRes(keywords: string) {
+export function getSearchRes(keywords: string, type?: number) {
   return request({
-    url: '/search/multimatch',
+    url: '/search',
     method: 'GET',
     params: {
-      keywords
+      keywords,
+      type
     }
   })
 }

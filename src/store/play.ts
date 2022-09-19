@@ -142,8 +142,9 @@ export const usePlay = defineStore('play', {
         this.randomIndex = generateShuffledArray(0, this.songList.length)
       }
     },
-    insertSong() {
-      
+    insertSong(newSong: SongType) {
+      this.songList.splice(this.currentSongIndex, 0, newSong)
+      this.currentSongIndex += 1
     }
   },
   persist: true
