@@ -113,24 +113,26 @@ const listSelect = (id: string | number) => {
 
 }
 const container = ref<HTMLElement>()
+
+
+// 暴露出tbody中每行的引用
+const rowRefs = ref<HTMLElement[] | undefined>()
+
+defineExpose({
+  rowRefs
+})
+
 onMounted(() => {
   if (container.value) {
     let {
       locInfo,
       holding,
       setEndHolding
-    } = useDragSelect(container as Ref<HTMLElement>)
+    } = useDragSelect(container as Ref<HTMLElement>, rowRefs)
     setEndHolding(() => {
       console.log(holding, locInfo)
     })
   }
-})
-
-// 暴露出tbody中每行的引用
-const rowRefs = ref<HTMLElement[]>()
-
-defineExpose({
-  rowRefs
 })
 </script>
 <style lang="scss">

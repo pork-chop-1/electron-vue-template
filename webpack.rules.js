@@ -24,7 +24,7 @@ module.exports = [
     use: [{
       loader: 'babel-loader',
       options: {
-        presets: ['@babel/preset-env', 'env'],
+        presets: ['@babel/preset-env', 'env', '@babel/preset-typescript'],
         plugins: ['@vue/babel-plugin-jsx']
       }
     },{
