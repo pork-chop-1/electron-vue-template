@@ -129,8 +129,9 @@ onMounted(() => {
       holding,
       setEndHolding
     } = useDragSelect(container as Ref<HTMLElement>, rowRefs)
-    setEndHolding(() => {
+    setEndHolding((selectEl, selectStatus) => {
       console.log(holding, locInfo)
+      console.log(selectEl, selectStatus)
     })
   }
 })
@@ -188,6 +189,13 @@ onMounted(() => {
 
       .body-item {
         padding: 16px
+      }
+
+      &.__selecting {
+        background: #979797bd
+      }
+      &.__selected {
+        background: #979797a1
       }
     }
   }

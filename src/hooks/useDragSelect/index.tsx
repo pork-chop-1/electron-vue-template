@@ -26,35 +26,28 @@ function checkIsInside(element: HTMLElement, rect: locInfoComputedType) {
   // a1 < x2 a2 > x1 b1
   let a1, a2, b1, b2;
   // 处理x1在左上方
-    a1 = rect.left;
-    a2 = rect.left + rect.width;
-    b1 = rect.top;
-    b2 = rect.top + rect.height;
+  a1 = rect.left;
+  a2 = rect.left + rect.width;
+  b1 = rect.top;
+  b2 = rect.top + rect.height;
   return a1 < x2 && a2 > x1 && b1 < y2 && b2 > y1;
 }
+
+type dragOptionType = {
+  minHeight: number;
+  minWidth: number;
+};
 
 function useDragSelect(
   containerRef: Ref<HTMLElement>,
   childrenRef: Ref<HTMLElement[] | undefined>,
-  opt = { minHeight: 30, minWidth: 2000 }
+  opt?: dragOptionType
 ) {
+  let _opt = Object.assign({ minHeight: 30, minWidth: 2000 }, opt) as dragOptionType;
   // 是否正在拖拽
   const holding = ref(false);
   // 显示选框
   const selecting = ref(false);
-  let list: HTMLElement[];
-  watch(childrenRef, (v) => {
-    console.log(v)
-  });
-  // const getChildrenList = () => {
-  //   if (!childrenRef) {
-  //     list = Array.from(containerRef.value.children) as HTMLElement[];
-  //   } else {
-  //     list = Array.from(
-  //       containerRef.value.querySelectorAll(childrenSelector)
-  //     ) as HTMLElement[];
-  //   }
-  // };
 
   watch(selecting, (v) => {
     if (v) {
@@ -71,8 +64,9 @@ function useDragSelect(
     height: 0,
   });
 
-  const endHolding = ref<() => void>();
-  const setEndHolding = (callback: () => void) => {
+  type endHoldingType = (selectedEl: HTMLElement[], selectStatus: boolean[]) => void;
+  const endHolding = ref<endHoldingType>();
+  const setEndHolding = (callback: endHoldingType) => {
     endHolding.value = callback;
   };
 
@@ -95,12 +89,11 @@ function useDragSelect(
   });
   let initLeft = 0,
     initTop = 0;
-  let _statusList = computed(() =>
-    childrenRef.value?.map((item) =>
-      checkIsInside(containerRef.value, locInfoComputed.value)
-    )
-  );
+  let _statusList: boolean[] | undefined;
   const down = (e: MouseEvent) => {
+    if(e.button !== 0) {
+      return
+    }
     holding.value = true;
     initLeft = e.pageX;
     initTop = e.pageY;
@@ -114,19 +107,27 @@ function useDragSelect(
     bottomBound = window.scrollY + rect.y + rect.height;
   };
   const up = (e: MouseEvent) => {
+    if (e.button !== 0) {
+      return;
+    }
     if (!holding.value) {
       return;
     }
     holding.value = false;
     selecting.value = false;
-    if (endHolding.value && selecting.value) {
-      endHolding.value();
+    _doneEffect();
+    if (endHolding.value) {
+      const list = childrenRef.value || [],
+        statusList = _statusList || [];
+      endHolding.value(
+        list.filter((v, i) => statusList[i]),
+        statusList
+      );
       window?.getSelection()?.removeAllRanges();
     }
+    _statusList = undefined;
     locInfo.width = 0;
     locInfo.height = 0;
-
-    console.log(_statusList.value);
   };
   const move = (e: MouseEvent) => {
     if (!holding.value) {
@@ -141,8 +142,8 @@ function useDragSelect(
     // 根据最小位移判定是否选区
     if (
       !selecting.value &&
-      (Math.abs(x - initLeft) > opt.minWidth ||
-        Math.abs(y - initTop) > opt.minHeight)
+      (Math.abs(x - initLeft) > _opt.minWidth ||
+        Math.abs(y - initTop) > _opt.minHeight)
     ) {
       selecting.value = true;
     }
@@ -158,6 +159,9 @@ function useDragSelect(
       locInfo.top = y;
       locInfo.height = initTop - y;
     }
+    if (selecting.value) {
+      _activeEffect()
+    };
   };
 
   const _changeStatus = (el: HTMLElement, status?: string) => {
@@ -166,16 +170,24 @@ function useDragSelect(
     el.classList.remove(SELECT_ITEM_STATES.SELECTED);
     status && el.classList.add(status);
   };
-  watch(_statusList, (statusList) => {
-    let list = childrenRef.value;
-    if (!statusList || !list) {
-      return
-    } 
-    for (let i = 0, l = statusList.length; i < l; i++) {
+  const _activeEffect = () => {
+    const prevStatusList = _statusList;
+    _statusList = childrenRef.value?.map((item) =>
+      checkIsInside(item, locInfoComputed.value)
+    );
+    const list = childrenRef.value;
+    if (
+      !_statusList ||
+      !list ||
+      prevStatusList?.toString() === _statusList.toString()
+    ) {
+      return;
+    }
+    for (let i = 0, l = _statusList.length; i < l; i++) {
       // selecting
-      if (statusList[i]) {
+      if (_statusList[i]) {
         _changeStatus(list[i], SELECT_ITEM_STATES.SELECTING);
-      } else if (!statusList[i] && statusList[i]) {
+      } else if (!_statusList[i] && list[i]) {
         // UNSELECTED
         _changeStatus(list[i], SELECT_ITEM_STATES.UNSELECTED);
       } else {
@@ -183,11 +195,29 @@ function useDragSelect(
         _changeStatus(list[i]);
       }
     }
-  });
+  };
+  const _doneEffect = () => {
+    _statusList = childrenRef.value?.map((item) =>
+      checkIsInside(item, locInfoComputed.value)
+    );
+    const list = childrenRef.value;
+    if (!_statusList || !list) {
+      return;
+    }
+    for (let i = 0, l = _statusList.length; i < l; i++) {
+      // selecting
+      if (_statusList[i]) {
+        _changeStatus(list[i], SELECT_ITEM_STATES.SELECTED);
+      } else {
+        // DEFAULT
+        _changeStatus(list[i]);
+      }
+    }
+  };
 
-  containerRef.value.addEventListener("pointerdown", down);
-  document.addEventListener("pointerup", up);
-  document.addEventListener("pointermove", move);
+  containerRef.value.addEventListener("mousedown", down);
+  document.addEventListener("mouseup", up);
+  document.addEventListener("mousemove", move);
   // 处理拖动事件
   document.addEventListener("dragstart", () => {
     holding.value = false;

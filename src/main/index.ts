@@ -64,7 +64,7 @@ const createWindow = (): void => {
   // 加载vue开发工具
   const ses = mainWindow.webContents.session
   ses.loadExtension(
-    'C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.2.1_0',
+    'C:\\Users\\Tom\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\6.4.5_0',
     {allowFileAccess: true}
   )
 

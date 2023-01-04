@@ -1,6 +1,8 @@
 <template>
-  <div class="drop-down-container" ref="container" v-show="visible">
-    <slot></slot>
+  <div class="drop-down-container" ref="container" :style="props.style" @click.right="rightClick">
+    <div class="drop-down-item" v-show="visible" ref="dropdownItem">
+      <slot></slot>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -8,48 +10,41 @@ import { ref, toRef, watch } from 'vue';
 import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps<{
-  visible: boolean
+  visible: boolean,
+  style?: {[key: string]: string}
 }>()
 const emits = defineEmits(['update:visible'])
 
 const container = ref<HTMLElement>()
 const lastModify = ref<number>(0)
 
-onClickOutside(container, (event) => {
+const visible = toRef(props, 'visible')
+const dropdownItem = ref<HTMLElement>()
+const rightClick = (e: MouseEvent) => {
+  console.log(dropdownItem.value)
+  if (!dropdownItem.value) {
+    return
+  }
+  dropdownItem.value.style.left = e.offsetX + 'px'
+  dropdownItem.value.style.top = e.offsetY + 'px'
+
+  emits('update:visible', true)
+}
+onClickOutside(dropdownItem, (event) => {
   emits('update:visible', false)
 })
-// const visible = toRef(props, 'visible')
 // watch(visible, (v) => {
 //   lastModify.value = Date.now()
 // })
 
-
-
-// const closeHandler = (e: MouseEvent) => {
-//   if((Date.now() - lastModify.value) < 100) {
-//     return
-//   }
-//   if (props.visible === false) {
-//     return
-//   } else {
-//     // Math.
-//   }
-//   // console.log(props.visible)
-//   const element = e.target
-
-//   if (element && container.value != null) {
-//     if (!container.value.contains(element as HTMLElement)) {
-//       // document.removeEventListener('click', closeHandler)
-//       emits('update:visible', false)
-//     }
-//   } else {
-//   }
-// }
-// document.addEventListener('click', closeHandler)
 </script>
 <style scoped lang="scss">
-  .drop-down-container {
-    overflow: auto;
+.drop-down-container {
+    overflow: visible;
     background-color: var(--plain-bg);
+
+    .drop-down-item{
+      position: relative;
+    }
   }
 </style>

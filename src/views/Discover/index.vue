@@ -5,7 +5,7 @@
         <div class="playlist-img-wrapper">
           <div class="daily-img-holder">
             <div class="daily-date-wrapper">
-              {{dayNumber}}
+              {{ dayNumber }}
             </div>
           </div>
           <router-link to="/DayRecommend"></router-link>
@@ -23,18 +23,66 @@
         </div>
         <div class="playlist-title-wrapper">
           <router-link :to="'/playlist/' + item.id">
-            {{  item.name  }}
+            {{ item.name }}
           </router-link>
         </div>
       </div>
     </div>
+
+    <DropDownVue v-model:visible="visible" :style="dropdownStyle">
+      <BMenu :menuInfo="menuInfo"></BMenu>
+    </DropDownVue>
   </div>
 </template>
 <script lang="ts" setup>
 import { type PlaylistType, Playlist } from '@/api/Playlist/index'
 import { onMounted, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router'
-import {fillZero} from '@/utils/NumberUtils'
+import { fillZero } from '@/utils/NumberUtils'
+import BMenu from '@/components/BMenu/index.vue'
+import DropDownVue from '@/components/DropDown/DropDown.vue';
+const menuInfo = ref([
+  {
+    name: 'string',
+    key: 'string',
+  },
+  {
+    name: 'string1',
+    key: 'string1',
+    children: [{
+      name: 'string',
+      key: 'string',
+    }, {
+      name: 'string',
+      key: 'string',
+      children: [{
+        name: 'string',
+        key: 'string',
+      },]
+    }, {
+      name: 'string',
+      key: 'string',
+      children: [{
+        name: 'string',
+        key: 'string',
+      },]
+    },]
+  },
+  {
+    name: 'string2',
+    key: 'string2',
+    children: [{
+      name: 'string',
+      key: 'string',
+    },]
+  },
+])
+const visible = ref(false)
+const dropdownStyle = ref({
+  background: '#f7f7f7',
+  height: '200px',
+  width: '200px',
+})
 const router = useRouter()
 
 const dayNumber = ref(fillZero(new Date().getDate(), 2))
@@ -68,6 +116,7 @@ onMounted(async () => {
       padding-bottom: 100%;
       border-radius: 5px;
       overflow: hidden;
+
       .daily-date-wrapper {
         position: absolute;
         top: 0;
@@ -91,9 +140,10 @@ onMounted(async () => {
       border-radius: 5px;
       overflow: hidden;
 
-      .playlist-img-holder{
+      .playlist-img-holder {
         width: 100%;
       }
+
       a {
         display: block;
         position: absolute;
@@ -113,7 +163,7 @@ onMounted(async () => {
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
-      
+
       & :hover {
         text-decoration: underline;
       }
