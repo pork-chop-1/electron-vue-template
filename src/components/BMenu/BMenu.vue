@@ -25,6 +25,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { type MenuItemType } from './index'
 export default defineComponent({
   name: 'BMenu',
   props: {
@@ -98,12 +99,6 @@ export default defineComponent({
   mounted() {
   }
 })
-export type MenuItemType = {
-  name: string;
-  key: string;
-  clickHandler?: (name: string, key: string) => void;
-  children?: MenuItemType[];
-}
 type _innerMenuType = {
   _active?: boolean,
 } & MenuItemType

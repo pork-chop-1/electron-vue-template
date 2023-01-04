@@ -39,7 +39,7 @@ import { type PlaylistType, Playlist } from '@/api/Playlist/index'
 import { onMounted, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router'
 import { fillZero } from '@/utils/NumberUtils'
-import BMenu from '@/components/BMenu/index.vue'
+import BMenu from '@/components/BMenu/BMenu.vue'
 import DropDownVue from '@/components/DropDown/DropDown.vue';
 const menuInfo = ref([
   {

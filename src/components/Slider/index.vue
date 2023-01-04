@@ -67,7 +67,7 @@ const backgroundStyle = reactive({
  */
 const updatePercentage = throttle((left: number) => {
     emits('update:percentage', Math.floor((left) / width.value * 10000) / 100)
-  }, 100, { 'trailing': false })
+  }, 200, { 'trailing': false })
 const setLoc = (left: number) => {
   foregroundStyle.width = `${left}px`
   buttonStyle.left = `${left}px`
