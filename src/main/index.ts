@@ -13,11 +13,11 @@ debug();
 
 const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 1000,
+    height: 800,
+    width: 1400,
     webPreferences: {
       // 是由electron forge webpack插件提供的preload路径
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY 
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
     },
     // 表示不需要系统自动提供的外边框，需要自己实现
     frame: false,

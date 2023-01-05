@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="playlist-wrapper" v-for="item in recommendPlayList" :key="item.id">
-        <div class="playlist-img-wrapper">
+        <div class="playlist-img-wrapper" ref="playlistWrapper">
           <img class="playlist-img-holder" :src="item.coverImgUrl">
           <router-link :to="'/playlist/' + item.id"></router-link>
         </div>
@@ -28,69 +28,51 @@
         </div>
       </div>
     </div>
-
-    <DropDownVue v-model:visible="visible" :style="dropdownStyle">
-      <BMenu :menuInfo="menuInfo"></BMenu>
-    </DropDownVue>
   </div>
 </template>
 <script lang="ts" setup>
 import { type PlaylistType, Playlist } from '@/api/Playlist/index'
-import { onMounted, Ref, ref } from 'vue';
+import { onMounted, Ref, ref, watch } from 'vue';
 import { useRouter } from 'vue-router'
 import { fillZero } from '@/utils/NumberUtils'
-import BMenu from '@/components/BMenu/BMenu.vue'
-import DropDownVue from '@/components/DropDown/DropDown.vue';
+import useClickMenu from '@/hooks/useClickMenu'
+const router = useRouter()
+
 const menuInfo = ref([
   {
-    name: 'string',
-    key: 'string',
+    name: '查看列表',
+    key: 'openList',
+    clickHandler(name: string, key: string, extra: any) {
+      console.log(name, key, extra.target.hash)
+      let id = extra.target.hash.split('/')
+      router.push('/playlist/' + id[id.length - 1])
+    }
   },
   {
-    name: 'string1',
-    key: 'string1',
-    children: [{
-      name: 'string',
-      key: 'string',
-    }, {
-      name: 'string',
-      key: 'string',
-      children: [{
-        name: 'string',
-        key: 'string',
-      },]
-    }, {
-      name: 'string',
-      key: 'string',
-      children: [{
-        name: 'string',
-        key: 'string',
-      },]
-    },]
+    name: '播放',
+    key: 'play',
   },
   {
-    name: 'string2',
-    key: 'string2',
-    children: [{
-      name: 'string',
-      key: 'string',
-    },]
+    name: '收藏',
+    key: 'in',
   },
 ])
-const visible = ref(false)
-const dropdownStyle = ref({
-  background: '#f7f7f7',
-  height: '200px',
-  width: '200px',
-})
-const router = useRouter()
+
+const playlistWrapper = ref<HTMLElement[]>()
+watch(playlistWrapper, (v) => {
+  console.log(playlistWrapper.value)
+  if (playlistWrapper.value != null) {
+    useClickMenu(playlistWrapper as unknown as Ref<HTMLElement>, menuInfo)
+  }
+}, {})
+
 
 const dayNumber = ref(fillZero(new Date().getDate(), 2))
 
 let recommendPlayList: Ref<PlaylistType[] | []> = ref([])
 onMounted(async () => {
   recommendPlayList.value = (await Playlist.highquality(9)).playlists
-  // console.log(recommendPlayList)
+
 })
 
 </script>

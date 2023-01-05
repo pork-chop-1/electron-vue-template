@@ -4,9 +4,9 @@
       创建的列表
     </div>
     <ul class="list-wrapper" :class="{opened: ownPlayListsOpened}">
-      <li 
-        class="list-item" 
-        v-for="item in ownPlayLists" 
+      <li
+        class="list-item"
+        v-for="item in ownPlayLists"
         :key="item.id"
         :title="item.name"
         @click="directPlaylist(item.id)"
@@ -20,9 +20,9 @@
       收藏的列表
     </div>
     <ul class="list-wrapper" :class="{opened: subsPlayListsOpened}">
-      <li 
-        class="list-item" 
-        v-for="item in subsPlayLists" 
+      <li
+        class="list-item"
+        v-for="item in subsPlayLists"
         :key="item.id"
         @click="directPlaylist(item.id)"
       >
@@ -98,7 +98,7 @@ const directPlaylist = (id: number) => {
   overflow: hidden;
   transition: .3s;
   max-height: 0;
-  
+
   &.opened {
     max-height: 1000px;
   }
@@ -106,8 +106,9 @@ const directPlaylist = (id: number) => {
   .list-item {
     width: 100%;
     height: 40px;
-    font-size: 18px;
-    padding: 0 0 0 12px;
+    line-height: 40px;
+    font-size: 16px;
+    padding: 0 0 0 20px;
     cursor: pointer;
     white-space: nowrap;
     text-overflow: ellipsis;

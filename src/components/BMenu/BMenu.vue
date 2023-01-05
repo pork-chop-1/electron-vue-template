@@ -40,7 +40,7 @@ export default defineComponent({
     let _inactivatingHandler: NodeJS.Timeout | number | undefined = undefined;
     const clickHandler = (e: MouseEvent, item: _innerMenuType, list: _innerMenuType[]) => {
       if (item.clickHandler) {
-        item.clickHandler(item.name, item.key)
+        item.clickHandler(item.name, item.key, item.extra)
       }
       if(!item._active) {
         list.forEach((li) => {
@@ -105,7 +105,7 @@ type _innerMenuType = {
 
 </script>
 <style lang="scss">
-$width: 200px;
+$width: auto;
 
 .b-menu-container {
   width: $width;
@@ -134,7 +134,8 @@ $width: 200px;
     }
 
     .b-menu-item-title {
-      padding-left: 20px;
+      padding: 0 20px;
+      white-space: nowrap;
     }
     .b-menu-item-right {
       height: 30px;
