@@ -37,7 +37,7 @@
 
       </div>
       <div class="comment-list">
-
+        <BCommentList />
       </div>
     </div>
   </div>
@@ -47,6 +47,7 @@ import { computed, onMounted, ref, toRef } from 'vue'
 import { Song, SongType } from '@/api/Song'
 import { usePlay } from '@/store/play'
 import ListCombine from '@/components/Functional/ListCombine.vue';
+import {BCommentList} from '@/components/BCommentList'
 
 const playStore = usePlay()
 const songInfo = toRef(playStore, 'songInfo')

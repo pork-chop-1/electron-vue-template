@@ -1,1 +1,1 @@
-import {default as BCommentList} from './index.vue'
+export {default as BCommentList} from './index.vue'
