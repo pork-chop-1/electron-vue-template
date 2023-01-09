@@ -9,7 +9,7 @@ import { ref } from 'vue';
 const props = defineProps({
   visible: {
     type: Boolean,
-    require: true
+    required: true
   }
 })
 const emits = defineEmits(['update:visible'])

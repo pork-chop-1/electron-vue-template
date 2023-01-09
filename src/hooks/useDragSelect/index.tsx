@@ -1,4 +1,5 @@
-import { Ref, render, ref, reactive, computed, watch } from "vue";
+import { Ref, render, ref, reactive, computed, watch, App, getCurrentInstance, nextTick, h } from "vue";
+import { BSelection, locInfoType } from "@/components/BSelection";
 
 const SELECT_ITEM_STATES = {
   SELECTING: "__selecting",
@@ -7,16 +8,10 @@ const SELECT_ITEM_STATES = {
   DEFAULT: "",
 };
 
-type locInfoComputedType = {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-};
 /**
  * @param{HTMLElement} element
  **/
-function checkIsInside(element: HTMLElement, rect: locInfoComputedType) {
+function checkIsInside(element: HTMLElement, rect: locInfoType) {
   if (!rect) return false;
   const bounding = element.getBoundingClientRect();
   const x1 = window.scrollX + bounding.left,
@@ -43,7 +38,10 @@ function useDragSelect(
   childrenRef: Ref<HTMLElement[] | undefined>,
   opt?: dragOptionType
 ) {
-  let _opt = Object.assign({ minHeight: 30, minWidth: 2000 }, opt) as dragOptionType;
+  let _opt = Object.assign(
+    { minHeight: 30, minWidth: 2000 },
+    opt
+  ) as dragOptionType;
   // 是否正在拖拽
   const holding = ref(false);
   // 显示选框
@@ -56,15 +54,23 @@ function useDragSelect(
     } else {
       containerRef.value.style.userSelect = "auto";
     }
-  });
-  const locInfo = reactive({
-    left: 0,
-    top: 0,
-    width: 0,
-    height: 0,
+    console.log(v);
   });
 
-  type endHoldingType = (selectedEl: HTMLElement[], selectStatus: boolean[]) => void;
+  const appContext = getCurrentInstance()?.appContext || null;
+  const container = document.createElement("div");
+  const dragSelect = <BSelection selecting={selecting} />;
+  render(dragSelect, container);
+  // dragSelect.appContext = appContext
+  document.body.appendChild(container);
+  // const dragSelectInstance = dragSelect.component
+
+  const locInfo = dragSelect.component?.exposed?.locInfo as locInfoType;
+
+  type endHoldingType = (
+    selectedEl: HTMLElement[],
+    selectStatus: boolean[]
+  ) => void;
   const endHolding = ref<endHoldingType>();
   const setEndHolding = (callback: endHoldingType) => {
     endHolding.value = callback;
@@ -76,23 +82,15 @@ function useDragSelect(
     topBound = 0,
     bottomBound = 0;
 
-  type keyofLocInfo = keyof typeof locInfo;
-  // 计算根据locInfo转换为px
-  const locInfoComputed = computed(() => {
-    return Object.keys(locInfo).reduce((pre, cur) => {
-      pre[cur as keyof locInfoComputedType] =
-        locInfo[cur as keyofLocInfo] === 0
-          ? locInfo[cur as keyofLocInfo]
-          : locInfo[cur as keyofLocInfo];
-      return pre;
-    }, {} as locInfoComputedType);
-  });
   let initLeft = 0,
     initTop = 0;
+
+  // 当前选中以及上次选中，上次选中用于unselected
   let _statusList: boolean[] | undefined;
-  const down = (e: MouseEvent) => {
-    if(e.button !== 0) {
-      return
+  let _prevStatusList: boolean[] | undefined;
+  const down = async (e: MouseEvent) => {
+    if (e.button !== 0) {
+      return;
     }
     holding.value = true;
     initLeft = e.pageX;
@@ -105,14 +103,17 @@ function useDragSelect(
     rightBound = window.scrollX + rect.x + rect.width;
     topBound = window.scrollY + rect.y;
     bottomBound = window.scrollY + rect.y + rect.height;
+
+
   };
-  const up = (e: MouseEvent) => {
+  const up = async (e: MouseEvent) => {
     if (e.button !== 0) {
       return;
     }
     if (!holding.value) {
       return;
     }
+    console.log(holding.value, selecting.value);
     holding.value = false;
     selecting.value = false;
     _doneEffect();
@@ -125,11 +126,13 @@ function useDragSelect(
       );
       window?.getSelection()?.removeAllRanges();
     }
-    _statusList = undefined;
+    _prevStatusList = _statusList;
     locInfo.width = 0;
     locInfo.height = 0;
+
+
   };
-  const move = (e: MouseEvent) => {
+  const move = async (e: MouseEvent) => {
     if (!holding.value) {
       return;
     }
@@ -160,9 +163,13 @@ function useDragSelect(
       locInfo.height = initTop - y;
     }
     if (selecting.value) {
-      _activeEffect()
-    };
+      _activeEffect();
+    }
+
+
   };
+
+  console.log(dragSelect);
 
   const _changeStatus = (el: HTMLElement, status?: string) => {
     el.classList.remove(SELECT_ITEM_STATES.SELECTING);
@@ -171,15 +178,14 @@ function useDragSelect(
     status && el.classList.add(status);
   };
   const _activeEffect = () => {
-    const prevStatusList = _statusList;
     _statusList = childrenRef.value?.map((item) =>
-      checkIsInside(item, locInfoComputed.value)
+      checkIsInside(item, locInfo)
     );
     const list = childrenRef.value;
     if (
       !_statusList ||
       !list ||
-      prevStatusList?.toString() === _statusList.toString()
+      _prevStatusList?.toString() === _statusList.toString()
     ) {
       return;
     }
@@ -187,7 +193,7 @@ function useDragSelect(
       // selecting
       if (_statusList[i]) {
         _changeStatus(list[i], SELECT_ITEM_STATES.SELECTING);
-      } else if (!_statusList[i] && list[i]) {
+      } else if (!_statusList[i] && _prevStatusList && _prevStatusList[i]) {
         // UNSELECTED
         _changeStatus(list[i], SELECT_ITEM_STATES.UNSELECTED);
       } else {
@@ -198,7 +204,7 @@ function useDragSelect(
   };
   const _doneEffect = () => {
     _statusList = childrenRef.value?.map((item) =>
-      checkIsInside(item, locInfoComputed.value)
+      checkIsInside(item, locInfo)
     );
     const list = childrenRef.value;
     if (!_statusList || !list) {
@@ -223,23 +229,6 @@ function useDragSelect(
     holding.value = false;
     selecting.value = false;
   });
-
-  const dragRect = () => {
-    if (selecting.value) {
-      return (
-        <div
-          class="b-drag-selection"
-          style={{
-            width: locInfoComputed.value.width + "px",
-            height: locInfoComputed.value.height + "px",
-            left: locInfoComputed.value.left + "px",
-            top: locInfoComputed.value.top + "px",
-          }}
-        ></div>
-      );
-    }
-  };
-  render(<dragRect />, document.body);
 
   return {
     locInfo,

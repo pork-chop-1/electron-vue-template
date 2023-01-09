@@ -1,6 +1,12 @@
 <template>
   <div class="playlist-container">
-    <BTable :columns="columns" :data-source="data">
+    <BTable
+      :columns="columns"
+      :data-source="data"
+      :dragSelectEnd="dragSelectEnd"
+      :rowClickHandler="rowClickHandler"
+      ref="recentTable"
+    >
       <template #bodyCell="{ column, record }">
           <!-- 处理列表中的歌曲名称 -->
           <template v-if="column.key === 'title'">
@@ -12,7 +18,7 @@
           <!-- 处理列表中的艺术家 -->
           <template v-else-if="column.key === 'artists'">
             <!-- 艺术家是一个列表 -->
-            <template 
+            <template
               v-for="artistInfo, index in record.artists"
               :key="artistInfo.id"
             >
@@ -38,13 +44,17 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, ref, toRef } from 'vue';
+import { computed, Ref, ref, toRef, watch } from 'vue';
 import BTable from '@/components/BTable/index.vue'
 import { DataSourceType } from '@/components/BTable';
 import { usePlay } from '@/store/play'
 import { SongType } from '@/api/Song';
 import { convertTime } from '@/utils/NumberUtils';
+import useClickMenu from '@/hooks/useClickMenu';
+import {useRouter} from 'vue-router'
+import { MenuItemType } from '../BMenu';
 
+const router = useRouter()
 
 const columns = ref([
   {
@@ -91,6 +101,36 @@ const toggleSong = (id: number) => {
   playStore.setSongList(songList.value)
   playStore.setSongId(id)
   playStore.setPlaneStatus(true)
+}
+
+const menuInfo: Ref<MenuItemType[]> = ref([])
+
+// 绑定拖拽选中
+const dragSelectEnd = (selectedEl: HTMLElement[], selectStatus: boolean[]) => {
+  // console.log(selectedEl, selectStatus)
+}
+// 绑定右击菜单
+const recentTable = ref<typeof BTable>()
+const rowRefs = computed(() => recentTable.value?.rowRefs)
+const menuVisible = ref(false)
+const menuHandler = useClickMenu(menuInfo, undefined, { visible: menuVisible })
+
+const rowClickHandler = (e: MouseEvent, dataItem: DataSourceType) => {
+  const res = menuHandler(e)
+  if(!res) {
+    return
+  }
+  menuInfo.value = [
+    {
+      name: '播放',
+      key: 'play',
+      clickHandler(name: string, key: string, extra: any) {
+        toggleSong(Number(dataItem.key))
+        // 点击完毕关闭右击菜单
+        menuVisible.value = false
+      }
+    },
+  ]
 }
 
 </script>

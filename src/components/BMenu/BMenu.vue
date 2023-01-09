@@ -31,7 +31,7 @@ export default defineComponent({
   props: {
     menuInfo: {
       type: Array as PropType<MenuItemType[]>,
-      require: true
+      required: true
     },
   },
   setup(props, ctx) {

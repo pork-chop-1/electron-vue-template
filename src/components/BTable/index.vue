@@ -5,10 +5,10 @@
         <td class="header-item" v-if="rowSelection?.selectedRowKeys">
           <a-checkbox></a-checkbox>
         </td>
-        <td 
-          v-for="item in columns" 
-          :key="item.key" 
-          :style="{ width: item.width }" 
+        <td
+          v-for="item in columns"
+          :key="item.key"
+          :style="{ width: item.width }"
           class="header-item">
           <slot name="headerCell" :column="item">
             {{ item.title }}
@@ -17,17 +17,18 @@
       </tr>
     </thead>
     <tbody class="body" ref="container">
-      <tr v-for="dataItem in dataSource" 
-        :key="dataItem.key" 
-        :class="{ 'body-item-group': true }" 
+      <tr v-for="dataItem in dataSource"
+        @mouseup="rowClickHandler && rowClickHandler($event, dataItem)"
+        :key="dataItem.key"
+        :class="{ 'body-item-group': true }"
         ref="rowRefs"
         @click="listSelect(dataItem.id)">
         <td class="body-item" v-if="rowSelection?.selectedRowKeys">
           <a-checkbox v-model:checked="checkList[dataItem.key as keyof typeof checkList]"></a-checkbox>
         </td>
-        <td v-for="key in columns" 
-          :key="key.key" 
-          :style="{ width: key.width }" 
+        <td v-for="key in columns"
+          :key="key.key"
+          :style="{ width: key.width }"
           class="body-item">
           <slot name="bodyCell" :column="key" :record="dataItem">
             {{ dataItem[key.key as keyof typeof dataItem] }}
@@ -53,24 +54,26 @@ const props = defineProps<{
     selectedRowKeys: (string|number)[],
     onChange: (arg1: (string|number)[]) => void
   },
-  isHideHeader?: boolean
+  rowClickHandler?: (e: MouseEvent, dataItem: DataSourceType) => void,
+  isHideHeader?: boolean,
+  dragSelectEnd?: (selectedEl: HTMLElement[], selectStatus: boolean[]) => void
 }>()
 // const columns = reactive(props.columns as ColumnsType[])
 const columns = toRef(props, 'columns')
 // const dataSource = reactive(props.dataSource as DataSourceType[])
 const dataSource = toRef(props, 'dataSource')
-
+const rowClickHandler = toRef(props, 'rowClickHandler')
 
 let checkList = reactive<{[key: string | number]: boolean}>({})
 dataSource.value?.forEach(v => {
   checkList[v.key] = false
 })
 
-// 
+//
 if(props.rowSelection) {
   // emits('update:selectList', selectList)
   console.log('rowSelection');
-  
+
   const rowSelection = reactive(props.rowSelection)
   // watch(reactive(rowSelection.selectedRowKeys), (list) => {
   //   // console.log(list);
@@ -81,7 +84,7 @@ if(props.rowSelection) {
   //     res[v.key] = list?.indexOf(v.key) !== -1
   //   })
   //   // console.log(res);
-    
+
   //   checkList.value = res
   //   console.log(rowSelection.selectedRowKeys)
   // })
@@ -93,8 +96,7 @@ if(props.rowSelection) {
         res.push(key)
       }
     })
-    console.log(res);
-    
+
     // rowSelection.selectedRowKeys = res
     rowSelection.onChange(res)
   }), {
@@ -123,15 +125,14 @@ defineExpose({
 })
 
 onMounted(() => {
-  if (container.value) {
+  if (container.value && props.dragSelectEnd != null) {
     let {
       locInfo,
       holding,
       setEndHolding
     } = useDragSelect(container as Ref<HTMLElement>, rowRefs)
     setEndHolding((selectEl, selectStatus) => {
-      console.log(holding, locInfo)
-      console.log(selectEl, selectStatus)
+      props.dragSelectEnd && props.dragSelectEnd(selectEl, selectStatus)
     })
   }
 })

@@ -21,15 +21,6 @@ body {
 }
 
 
-// 拖动hooks
-.b-drag-selection {
-  box-sizing: border-box;
-  position: absolute;
-  border: 1px solid var(--theme-bg);
-  user-select: none;
-  background-color: var(--theme-bg-transparent);
-}
-
 a {
   color: var(--plain-fg);
   text-decoration: none;

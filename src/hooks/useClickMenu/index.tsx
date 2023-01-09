@@ -4,10 +4,11 @@ import { computed, defineComponent, h, ref, Ref, render, watch } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 function useClickMenu(
-  containerRef: Ref<HTMLElement | HTMLElement[]>,
-  menuInfo: Ref<MenuItemType[]>
+  menuInfo: Ref<MenuItemType[]>,
+  containerRef?: Ref<HTMLElement | HTMLElement[]>,
+  options?: {visible?: Ref<boolean>}
 ) {
-  const visible = ref(false);
+  const visible = options?.visible || ref(false);
   const left = ref(0);
   const top = ref(0);
   const width = ref(0)
@@ -21,7 +22,7 @@ function useClickMenu(
 
   const clickHandler = (e: MouseEvent) => {
     if (e.button !== 2) {
-      return;
+      return false;
     }
     targetRef.value = e.target as HTMLElement
     visible.value = true;
@@ -34,6 +35,7 @@ function useClickMenu(
     } else {
       left.value = e.pageX;
     }
+    return true;
     // if(bodyHeight < e.pageY + width.value) {
     //   top.value = e.pageY - height.value
     // } else {
@@ -43,52 +45,59 @@ function useClickMenu(
   const clickOutsideHandler = (e: MouseEvent) => {
     visible.value = false;
   };
-  if (!Array.isArray(containerRef.value)) {
-    (containerRef.value as HTMLElement).addEventListener(
-      "mouseup",
-      clickHandler
-    );
-  } else {
-    (containerRef.value as HTMLElement[]).forEach((item) => {
-      item.addEventListener("mouseup", clickHandler);
-    });
+
+  // 直接提供了绑定domRef的话就绑定，否则直接返回clickHandler
+  if (containerRef != null) {
+    if (!Array.isArray(containerRef.value)) {
+      (containerRef.value as HTMLElement).addEventListener(
+        "mouseup",
+        clickHandler
+      );
+    } else {
+      (containerRef.value as HTMLElement[]).forEach((item) => {
+        item.addEventListener("mouseup", clickHandler);
+      });
+    }
   }
-  const MenuWrapper = defineComponent({
-    setup() {
-    },
+  const menuWrapper = defineComponent({
+    setup() {},
     render() {
       const wrapper = ref<HTMLElement>();
       let done = false;
       watch(wrapper, (v) => {
-        if(!done) {
-          if(v != null) {
-            done = true
+        if (!done) {
+          if (v != null) {
+            done = true;
             onClickOutside(v, clickOutsideHandler);
           }
         }
-        if(v != null) {
-          width.value = v.offsetWidth
-          height.value = v.offsetHeight
+        if (v != null) {
+          width.value = v.offsetWidth;
+          height.value = v.offsetHeight;
         }
-      })
-      return visible.value ? (
-        <div
-          style={{
-            position: "absolute",
-            left: left.value + "px",
-            top: top.value + "px",
-          }}
-          ref={wrapper}
-        >
-          <BMenu menuInfo={menuInfoExtra.value}></BMenu>
-        </div>
-      ) : (
-        <div></div>
-      );
-    }
+      });
+      if (visible.value) {
+        return (
+          <div
+            style={{
+              position: "absolute",
+              left: left.value + "px",
+              top: top.value + "px",
+            }}
+            ref={wrapper}
+          >
+            <BMenu menuInfo={menuInfoExtra.value}></BMenu>
+          </div>
+        )
+      }
+    },
   });
 
-  render(<MenuWrapper />, document.body);
+  const container = document.createElement("div");
+  render(<menuWrapper />, container);
+  document.body.appendChild(container);
+
+  return clickHandler;
 }
 
 export default useClickMenu;

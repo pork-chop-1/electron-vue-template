@@ -36,14 +36,18 @@ import { onMounted, Ref, ref, watch } from 'vue';
 import { useRouter } from 'vue-router'
 import { fillZero } from '@/utils/NumberUtils'
 import useClickMenu from '@/hooks/useClickMenu'
+import usePlay from '@/store/play';
+import { Song } from '@/api/Song';
+// import {}
 const router = useRouter()
-
+let visible: Ref<boolean> = ref(false)
+const playStore = usePlay()
 const menuInfo = ref([
   {
     name: '查看列表',
     key: 'openList',
     clickHandler(name: string, key: string, extra: any) {
-      console.log(name, key, extra.target.hash)
+      // 打开列表同等功能
       let id = extra.target.hash.split('/')
       router.push('/playlist/' + id[id.length - 1])
     }
@@ -51,18 +55,36 @@ const menuInfo = ref([
   {
     name: '播放',
     key: 'play',
+    async clickHandler(name: string, key: string, extra: any) {
+      let id = extra.target.hash.split('/')
+      id = id[id.length - 1]
+
+      // 获取歌曲列表信息
+      const some = await Playlist.playListDetail(id)
+      if (some.code === 200) {
+        const trackIdList = some.playlist.trackIds.map((v) => {
+          return v.id
+        })
+        const songDetails = await Song.detail(trackIdList)
+        const songList = songDetails.songs
+        playStore.setSongList(songList)
+        playStore.setSongId(id)
+        playStore.setPlaneStatus(true)
+
+        visible && (visible.value = false)
+      }
+    }
   },
   {
-    name: '收藏',
+    name: '收藏()',
     key: 'in',
   },
 ])
 
 const playlistWrapper = ref<HTMLElement[]>()
 watch(playlistWrapper, (v) => {
-  console.log(playlistWrapper.value)
   if (playlistWrapper.value != null) {
-    useClickMenu(playlistWrapper as unknown as Ref<HTMLElement>, menuInfo)
+    useClickMenu(menuInfo, playlistWrapper as Ref<HTMLElement[]>, {visible})
   }
 }, {})
 
@@ -72,7 +94,6 @@ const dayNumber = ref(fillZero(new Date().getDate(), 2))
 let recommendPlayList: Ref<PlaylistType[] | []> = ref([])
 onMounted(async () => {
   recommendPlayList.value = (await Playlist.highquality(9)).playlists
-
 })
 
 </script>
