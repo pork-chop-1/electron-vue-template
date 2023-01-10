@@ -37,7 +37,7 @@
 
       </div>
       <div class="comment-list">
-        <BCommentList />
+        <BCommentList :song-id="songInfo?.id"/>
       </div>
     </div>
   </div>

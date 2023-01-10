@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div v-if="loading">loading...</div>
+  <div v-else>
     <div class="list-item" v-for="item in listData" :key="item.key">
       <slot name="listItem" :data="item"></slot>
     </div>
@@ -12,7 +13,7 @@ import { onMounted, ref, toRef } from 'vue';
 const props = defineProps<{
   loading: boolean,
   listData: {
-    key: string,
+    key: string | number,
     [otherKey: string]: any
   }[]
 }>()

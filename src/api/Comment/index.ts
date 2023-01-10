@@ -22,7 +22,7 @@ export type SongCommentResType = {
 
 export const Comment = {
   getSongComment: (id: number, limit: number, offset: number) => {
-    return request<Response<SongCommentResType>>({
+    return request<SongCommentResType>({
       url: '/comment/music',
       method: 'GET',
       params: {
