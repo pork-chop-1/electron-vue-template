@@ -72,7 +72,7 @@ const songArtists = computed(() => {
 // })
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .song-container {
   width: 100%;
   background-color: var(--plain-bg);
@@ -146,6 +146,11 @@ const songArtists = computed(() => {
   .comment-wrapper {
     max-width: 1200px;
     margin: 0 auto;
+
+    .comment-list {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
   }
 }
 </style>

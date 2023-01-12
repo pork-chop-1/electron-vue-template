@@ -55,24 +55,39 @@ const emits = defineEmits(['update:current'])
 
 const centerList = ref<number[]>([])
 const pageSize = computed(() => Math.ceil(total.value / size.value))
-watch(current, v => {
-  if(pageSize.value < 8) {
+
+const redrawPagination = (current: number) => {
+  if (pageSize.value < 8) {
     centerList.value = range(2, pageSize.value)
   }
-  if(v < 3) {
-    v = 3
+  if (current < 3) {
+    current = 3
   }
-  if(v > pageSize.value - 3) {
-    v = pageSize.value - 3
+  if (current > pageSize.value - 3) {
+    current = pageSize.value - 3
   }
   const res = []
-  for(let i = -2; i < 3; i++) {
-    if(v + i > 1 && v + i < pageSize.value) {
-      res.push(v + i)
+  for (let i = -2; i < 3; i++) {
+    if (current + i > 1 && current + i < pageSize.value) {
+      res.push(current + i)
     }
   }
   centerList.value = res
-}, {immediate: true})
+}
+// 页数改变
+watch(current, redrawPagination, {immediate: true})
+
+// 总数改变
+watch(total, (newVal, oldVal) => {
+  if(newVal !== oldVal) {
+    let pageSize = Math.ceil(newVal / size.value)
+    if(current.value > pageSize) {
+      current.value = pageSize
+    } else {
+      redrawPagination(current.value)
+    }
+  }
+})
 
 const currentChange = (now: number) => {
   if(now !== current.value) {
